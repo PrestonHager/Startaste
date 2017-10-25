@@ -90,12 +90,11 @@ graphics_print_string:
 
 ; ============================================ ;
 ; Move Cursor to End of Line Routine
-; Arguments: dh: Line
+; Arguments: None
 ; Outputs: None
 ; ============================================ ;
 graphics_move_end_line:
     pusha
-    mov bx, dl
 
     call graphics_hide_cursor
     call graphics_get_cursor

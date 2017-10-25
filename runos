@@ -3,8 +3,8 @@
 
 FILE=$1
 
-nasm -f bin -o bootloader_tmp.bin $FILE
+nasm -f bin -o bootloader.tmp.bin $FILE
 
-dd status=noxfer conv=notrunc if=bootloader_tmp.bin of=bootloader_tmp.flp
+dd status=noxfer conv=notrunc if=bootloader.tmp.bin of=bootloader.tmp.flp
 
-qemu-system-i386 -fda bootloader_tmp.flp
+qemu-system-i386 -fda bootloader.tmp.flp

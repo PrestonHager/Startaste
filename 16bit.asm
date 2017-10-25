@@ -1,6 +1,6 @@
 BITS 16
 
-; Bootloader 1
+; 16 Bit Bootloader for Startaste OS
 
 start:
 	mov ax, 07C0h	; Set up 4k stack space after bootloader
@@ -21,13 +21,13 @@ start:
 
 update:
 	call keyboard_input
-	call graphics_get_cursor
-	cmp dh, 1
-	je .done_not_newline
-	cmp dl, 0
-	jne .done_not_newline
-	; Is a newline and a command has been sent.
-	.done_not_newline:
+	; call graphics_get_cursor
+	; cmp dh, 1
+	; je .done_not_newline
+	; cmp dl, 0
+	; jne .done_not_newline
+	; ; Is a newline and a command has been sent.
+	; .done_not_newline:
 	jmp update		; run update loop
 ;jmp $	; Hang at end.
 
