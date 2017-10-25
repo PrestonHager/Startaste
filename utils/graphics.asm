@@ -61,11 +61,11 @@ graphics_show_cursor:   ; Hide cursor routine
 ; Outputs: dh: Color, dl: Character
 ; ============================================ ;
 graphics_get_character: ; Get character routine
-mov bh, 0   ; Page argument
-mov ah, 8   ; Function code
-int 10h     ; Call video screen draw interrupt
+    mov bh, 0   ; Page argument
+    mov ah, 8   ; Function code
+    int 10h     ; Call video screen draw interrupt
 
-ret
+    ret
 
 ; ============================================ ;
 ; Print String Routine
@@ -99,9 +99,9 @@ graphics_move_end_line:
 
     call graphics_hide_cursor
     call graphics_get_cursor
-    mov dl, 81                      ; Set column to end of row
+    mov dl, 80                      ; Set column to end of row
     call graphics_move_cursor
-.loop_find_character:           ; Find the last character of that row and set cursor there
+    .loop_find_character:           ; Find the last character of that row and set cursor there
         cmp dl, 0                   ; If in first column of row then row is empty and jump to finish
         je .done
         dec dl                      ; Otherwise continue... Go back one column
