@@ -1,6 +1,7 @@
 *.tmp.*
 *.flp
 *.bin
+*.o
 *.c
 *.zip
 boot_loader0.asm

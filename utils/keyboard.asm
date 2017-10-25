@@ -44,6 +44,7 @@ keyboard_input:     ; Keyboard input routine
     je .right_arrow
     jmp .done
 .is_ascii:
+    je .done    ; finish if no key pressed
     mov ah, 0Eh
     cmp al, 8
     je .backspace

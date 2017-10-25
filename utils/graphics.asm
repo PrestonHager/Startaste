@@ -91,6 +91,7 @@ graphics_print_string:
 ; ============================================ ;
 ; Move Cursor to End of Line Routine
 ; Arguments: None
+; Arguments: dh: Line
 ; Outputs: None
 ; ============================================ ;
 graphics_move_end_line:
