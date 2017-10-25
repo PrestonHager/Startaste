@@ -1,0 +1,8 @@
+*.tmp.*
+*.flp
+*.bin
+*.c
+*.zip
+boot_loader0.asm
+boot.asm
+mikeos-4.5/
