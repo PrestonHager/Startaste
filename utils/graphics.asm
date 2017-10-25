@@ -99,7 +99,6 @@ graphics_move_end_line:
     call graphics_hide_cursor
     call graphics_get_cursor
     mov dl, 81                      ; Set column to end of row
-    pop dh
     call graphics_move_cursor
 .loop_find_character:           ; Find the last character of that row and set cursor there
         cmp dl, 0                   ; If in first column of row then row is empty and jump to finish
