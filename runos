@@ -1,0 +1,10 @@
+# shell script for creating os based on input filename
+# arguments: runos [FILE]
+
+FILE=$1
+
+nasm -f bin -o bootloader_tmp.bin $FILE
+
+dd status=noxfer conv=notrunc if=bootloader_tmp.bin of=bootloader_tmp.flp
+
+qemu-system-i386 -fda bootloader_tmp.flp
