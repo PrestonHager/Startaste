@@ -95,6 +95,7 @@ graphics_print_string:
 ; ============================================ ;
 graphics_move_end_line:
     pusha
+    mov bx, dl
 
     call graphics_hide_cursor
     call graphics_get_cursor
