@@ -1,7 +1,6 @@
 BITS 16
 
 ; 16 Bit Bootloader for Startaste OS
-; Bootloader 1
 
 start:
 	mov ax, 07C0h	; Set up 4k stack space after bootloader
@@ -14,6 +13,7 @@ start:
 	mov ax, 07C0h	; Set data segment to where it's loaded
 	mov ds, ax
 
+start_graphics:
 	mov ax, WELCOME_MSG		; Top bar message
 	mov bx, navigation_msg	; Bottom bar message (blank/empty)
 	mov cx, 0x38			; Main background color and char color
@@ -28,6 +28,8 @@ update:
 	; cmp dl, 0					; If the column is == to 0 then continue otherwise not new line.
 	; jne .done_not_newline
 	; ; Is a newline and a command has been sent.
+	; mov si, DEBUG_MSG
+	; call graphics_print_string
 	.done_not_newline:
 	jmp update		; run update loop
 ;jmp $	; Hang at end.
