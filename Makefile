@@ -3,7 +3,11 @@ ASSEMBLER=nasm
 # The Emulator (default=qemu-system-i386):
 EMULATOR=qemu-system-i386
 # Default file name in case it isn't passed in:
+<<<<<<< HEAD
 file=bootloader.asm
+=======
+file=16bit.asm
+>>>>>>> 2d5d50d5ef84923719480d0893dac9736ce209cb
 
 run: os.img
 	$(EMULATOR) os.img
