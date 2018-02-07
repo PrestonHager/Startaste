@@ -18,7 +18,6 @@ start_graphics:
 	mov bx, navigation_msg	; Bottom bar message (blank/empty)
 	mov cx, 0x38			; Main background color and char color
 	call graphics_background	; Call draw background routine
-	;call print_string	; Call print_string routine
 
 update:
 	call keyboard_input
