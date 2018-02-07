@@ -1,6 +1,6 @@
 BITS 16
 
-; 16 Bit Bootloader for Startaste OS
+; Original test 16 Bit bootloader for Startaste OS
 
 start:
 	mov ax, 07C0h	; Set up 4k stack space after bootloader
