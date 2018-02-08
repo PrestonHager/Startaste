@@ -1,6 +1,7 @@
-BITS 16
-
 ; bootloader for Startaste OS. This boot's the main assembly.
+
+[org 0x7E00]
+BITS 16
 
 bootloader:
   mov ax, 07C0h	; Set up 4k stack space after bootloader
@@ -20,7 +21,7 @@ bootloader:
   mov ch, 0x0 ; tracks
   mov cl, 0x2 ; sector number
   mov dh, 0x0 ; head
-  mov dl, 0x0 ; drive
+  mov dl, 0x80 ; drive
   mov bx, 0x07E0 ; address for ES. will calcuate to 0x7E00 with offset included.
   mov es, bx
   xor bx, bx  ; now set bx (offset) to 0.
@@ -28,7 +29,7 @@ bootloader:
   ; if the disk doesn't load. then jump to printing an error.
   jc .error
   ; otherwise jump to the code.
-  jmp 0x7E00
+  jmp 0x07E0:0x0000
 
   .error:
     mov si, ERROR_MSG

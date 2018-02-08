@@ -1,12 +1,15 @@
 ; kernel for Startaste OS.
 
-start:
+[org 0x7E00]
+BITS 16
+
+kernel_start:
   mov ax, WELCOME_MSG		; Top bar message
   mov bx, navigation_msg	; Bottom bar message (blank/empty)
   mov cx, 0x38			; Main background color and char color
   call graphics_background	; Call draw background routine
 
-update:
+kernel_update:
 	call keyboard_input
 	; call graphics_get_cursor
 	; cmp dh, 1					; Cannot be a new command on the first line.
@@ -17,7 +20,7 @@ update:
 	; mov si, DEBUG_MSG
 	; call graphics_print_string
 	.done_not_newline:
-	jmp update		; run update loop
+	jmp kernel_update		; run update loop
 
   WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
   DEBUG_MSG db 'debugMsg.', 0
