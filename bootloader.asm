@@ -15,12 +15,12 @@ bootloader:
 
   .read_disk:
   ; read the disk
-  mov ah, 0x02 ; function: read sectors from drive
-  mov al, 0x1  ; sectors to read
-  mov ch, 0x0  ; tracks
-  mov cl, 0x2  ; sector number
-  mov dh, 0x0  ; head
-  mov dl, 0x0; drive
+  mov ah, 02h ; function: read sectors from drive
+  mov al, 0x1 ; sectors to read
+  mov ch, 0x0 ; tracks
+  mov cl, 0x2 ; sector number
+  mov dh, 0x0 ; head
+  mov dl, 0x0 ; drive
   mov bx, 0x07E0 ; address for ES. will calcuate to 0x7E00 with offset included.
   mov es, bx
   xor bx, bx  ; now set bx (offset) to 0.
@@ -32,10 +32,14 @@ bootloader:
 
   .error:
     mov si, ERROR_MSG
+    mov ah, 01h ; function: get status of last drive operation.
+    mov dl, 0x0 ; drive
+    int 0x13
+    add [si], ah
     call print_string
     jmp $
 
-ERROR_MSG db "Error in booting.", 0
+ERROR_MSG db " # Error in booting.", 0
 
 %include "utils/print_string.asm"
 
