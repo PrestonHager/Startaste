@@ -4,15 +4,15 @@
 BITS 16
 
 bootloader:
-  mov ax, 07C0h	; Set up 4k stack space after bootloader
-  add ax, 288	; (4096 + 512) / 16 bytes per paragraph
-  cli				; Disable interrupts while changing stack
-  mov ss, ax
-  mov sp, 4096
-  sti				; Restore interrupts
-
-  mov ax, 07C0h	; Set data segment to where it's loaded
-	mov ds, ax
+  ; mov ax, 07C0h	; Set up 4k stack space after bootloader
+  ; add ax, 288	; (4096 + 512) / 16 bytes per paragraph
+  ; cli				; Disable interrupts while changing stack
+  ; mov ss, ax
+  ; mov sp, 4096
+  ; sti				; Restore interrupts
+  ;
+  ; mov ax, 07C0h	; Set data segment to where it's loaded
+	; mov ds, ax
 
   .read_disk:
   ; read the disk
