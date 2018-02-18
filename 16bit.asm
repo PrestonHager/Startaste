@@ -1,3 +1,4 @@
+[org 0x0]
 BITS 16
 
 ; Original test 16 Bit bootloader for Startaste OS
