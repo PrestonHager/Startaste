@@ -4,7 +4,12 @@ Another OS! This was made simply as a side project, don't expect it to be great.
 ------
 
 ## Install
-To install Startaste download the source package via git or zip. `git clone https://github.com/PrestonHager/Startaste.git` to pull via git, or download link [here](https://github.com/PrestonHager/Startaste.git). Then in a terminal run it using `make`, or executing the commands in the `Makefile`. If you're wanting to run a different bootloader simply add the variable, `file` in the command line; as such, `make file=[filename]`.
+To install Startaste download the source package via git or zip. `git clone https://github.com/PrestonHager/Startaste.git` to pull via git, or download link [here](https://github.com/PrestonHager/Startaste.git). Then in a terminal run it using `make`, or executing the commands in the `Makefile`. If you're wanting to run a different bootloader simply add the variable, `bootloader` in the command line; as such, `make bootloader=[filename]`.
+
+------
+
+## Differences on Windows
+If you haven't installed GNU Cat on your windows computer, use `make platform=win` when making. This will instead have make use the `type` command, which is the windows equivalent of cat. 
 
 -----
 
