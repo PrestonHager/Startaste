@@ -9,5 +9,5 @@ kernel=kernel.asm
 run:
 	$(ASSEMBLER) -f bin -o os0.tmp $(file)
 	$(ASSEMBLER) -f bin -o os1.tmp $(kernel)
-	copy /b os0.tmp+os1.tmp os.img
+	copy /Y /b os0.tmp+os1.tmp os.img
 	$(EMULATOR) -drive format=raw,file=os.img

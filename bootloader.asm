@@ -25,9 +25,9 @@ bootloader:
   mov ax, 0x07C0  ; ax = bootlaoder location 16bit memory address (loc/16).
 	mov ds, ax ; set ds to location.
 
-  mov si, DEBUG_MSG
-  call print_string
-  jmp $
+  ; mov si, DEBUG_MSG
+  ; call print_string
+  ; jmp $
 
   .read_disk:
   ; read the disk
