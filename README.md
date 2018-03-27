@@ -4,7 +4,7 @@ Another OS! This was made simply as a side project, don't expect it to be great.
 ------
 
 ## Install
-To install Startaste download the source package via git or zip. `git clone https://github.com/DragonMastur/Startaste.git` to pull via git, or download link [here](https://github.com/PrestonHager/Startaste.git). Then in a terminal run it using `make`, or executing the commands in the `Makefile`. If you're wanting to run a different bootloader simply add the variable, `file` in the command line; as such, `make file=[filename]`.
+To install Startaste download the source package via git or zip. `git clone https://github.com/PrestonHager/Startaste.git` to pull via git, or download link [here](https://github.com/PrestonHager/Startaste.git). Then in a terminal run it using `make`, or executing the commands in the `Makefile`. If you're wanting to run a different bootloader simply add the variable, `file` in the command line; as such, `make file=[filename]`.
 
 -----
 
