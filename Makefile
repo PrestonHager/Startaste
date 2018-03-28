@@ -14,7 +14,7 @@ all: run clean
 
 run: os.img
 	@echo "Running the emulator using compiled image."
-	@qemu-system-i386 -drive format=raw,file=os.img
+	@qemu-system-i386 -readconfig emulator.config
 
 os.img: os0.tmp os1.tmp
 	@$(CAT_COMMAND) os0.tmp os1.tmp > os.img
@@ -29,3 +29,7 @@ os1.tmp:
 clean:
 	@echo "Cleaning up the temporary files."
 	@rm os0.tmp os1.tmp
+
+clean-full:
+	@echo "Cleaning all files."
+	@rm os0.tmp os1.tmp os.img

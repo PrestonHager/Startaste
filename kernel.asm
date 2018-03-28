@@ -1,21 +1,21 @@
 ; kernel for Startaste OS.
 
-[org 0x8C00]
+[org 0x7E00]
 BITS 16
 
 kernel_start:
   ; setup stack.
-  ; the stack segment register (ss) is right after the kernel. so the current address + 512. and because of 16bit memory addresses we divide it by 16.
+  ; the stack segment register (ss) is right after the kernel. so the current address + 1024. and because of 16bit memory addresses we divide it by 16.
   ; the stack pointer register (sp) is the bottom of the stack (or the offset) so it's at 0.
-  mov ax, 0x08C0	; the ax is a 16bit memory address (adrs*16+offset). this is the bootloader's address + it's length (512 bytes)
-  add ax, 512
+  mov ax, 0x07E0	; the ax is a 16bit memory address (adrs*16+offset). this is the bootloader's address + it's length (512 bytes)
+  add ax, 1024
   cli				; Disable interrupts while changing stack
   mov ss, ax  ; move stack segment to ax address.
   mov sp, 0  ; stack pointer is offset, this is size of stack (4096 bytes).
   sti				; Restore interrupts
 
   ; Set data segment to the begining of the kernel (to encapsul all the data).
-  mov ax, 0x08C0  ; ax = bootlaoder location 16bit memory address (loc/16).
+  mov ax, 0x07E0  ; ax = bootlaoder location 16bit memory address (loc/16).
 	mov ds, ax ; set ds to location.
 
   ; now run the graphics.
