@@ -13,16 +13,19 @@ endif
 all: run clean
 
 run: os.img
-	qemu-system-i386 -drive format=raw,file=os.img
+	@echo "Running the emulator using compiled image."
+	@qemu-system-i386 -drive format=raw,file=os.img
 
 os.img: os0.tmp os1.tmp
-	$(CAT_COMMAND) os0.tmp os1.tmp > os.img
+	@$(CAT_COMMAND) os0.tmp os1.tmp > os.img
 
 os0.tmp:
-	$(ASSEMBLER) -f bin -o os0.tmp $(bootloader)
+	@echo "Compiling assembly code and catanating."
+	@$(ASSEMBLER) -f bin -o os0.tmp $(bootloader)
 
 os1.tmp:
-	$(ASSEMBLER) -f bin -o os1.tmp $(kernel)
+	@$(ASSEMBLER) -f bin -o os1.tmp $(kernel)
 
 clean:
-	rm os0.tmp os1.tmp
+	@echo "Cleaning up the temporary files."
+	@rm os0.tmp os1.tmp
