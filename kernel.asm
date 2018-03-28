@@ -1,21 +1,21 @@
 ; kernel for Startaste OS.
 
-[org 0x8800]
+[org 0x8C00]
 BITS 16
 
 kernel_start:
   ; setup stack.
-  ; 0x8800 + 512 = 0x8000 / 16 = 0x0800
-  ; or 0x7E00 + 512 + 4096 = 0x9000 / 16 = 0x0900
-  mov ax, 0x07C0	; the ax is a 16bit memory address (adrs*16+offset). this is the bootloader's address + it's length (512 bytes)
-  add ax, 32
+  ; the stack segment register (ss) is right after the kernel. so the current address + 512. and because of 16bit memory addresses we divide it by 16.
+  ; the stack pointer register (sp) is the bottom of the stack (or the offset) so it's at 0.
+  mov ax, 0x08C0	; the ax is a 16bit memory address (adrs*16+offset). this is the bootloader's address + it's length (512 bytes)
+  add ax, 512
   cli				; Disable interrupts while changing stack
   mov ss, ax  ; move stack segment to ax address.
-  mov sp, 512  ; stack pointer is offset, this is size of stack (4096 bytes).
+  mov sp, 0  ; stack pointer is offset, this is size of stack (4096 bytes).
   sti				; Restore interrupts
 
-  ; Set data segment to where it's loaded
-  mov ax, 0x07C0  ; ax = bootlaoder location 16bit memory address (loc/16).
+  ; Set data segment to the begining of the kernel (to encapsul all the data).
+  mov ax, 0x08C0  ; ax = bootlaoder location 16bit memory address (loc/16).
 	mov ds, ax ; set ds to location.
 
   ; now run the graphics.
@@ -26,14 +26,14 @@ kernel_start:
 
 kernel_update:
 	call keyboard_input
-	; call graphics_get_cursor
-	; cmp dh, 1					; Cannot be a new command on the first line.
-	; je .done_not_newline
-	; cmp dl, 0					; If the column is == to 0 then continue otherwise not new line.
-	; jne .done_not_newline
-	; ; Is a newline and a command has been sent.
-	; mov si, DEBUG_MSG
-	; call graphics_print_string
+	call graphics_get_cursor
+	cmp dh, 1					; Cannot be a new command on the first line.
+	je .done_not_newline
+	cmp dl, 0					; If the column is == to 0 then continue otherwise not new line.
+	jne .done_not_newline
+	; Is a newline and a command has been sent.
+	mov si, DEBUG_MSG
+	call graphics_print_string
 	.done_not_newline:
 	jmp kernel_update		; run update loop
 
@@ -45,4 +45,4 @@ kernel_update:
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
 
-times 512-($-$$) db 0	; Padding for the rest of the kernel
+times 1024-($-$$) db 0	; Padding for the rest of the kernel
