@@ -8,15 +8,13 @@ keyboard_test_input:    ; Testfor input routine
     pusha
     mov ah, 01h     ; Function code
     int 16h
-    jz .key
-    jmp .done
-
-.key:
-    mov ah, 00h     ; Function code
+    jz .done
+    ; otherwise there was a key press...
     popa
+    mov ah, 00h     ; Function code
     int 16h         ; Call 16h interrupt
     ret             ; Return with values in ah and al
-.done:      ; Finish routine
+  .done:      ; Finish routine
     popa
     ret
 
@@ -27,7 +25,7 @@ keyboard_test_input:    ; Testfor input routine
 keyboard_input:     ; Keyboard input routine
     pusha
 
-.repeat:
+  .repeat:
     mov al, 0
 
     call keyboard_test_input
@@ -37,22 +35,24 @@ keyboard_input:     ; Keyboard input routine
     jne .is_scan_code
     jmp .done
 
-.is_scan_code:
+  .is_scan_code:
     cmp ah, 4Bh
     je .left_arrow
     cmp ah, 4Dh
     je .right_arrow
     jmp .done
-.is_ascii:
+  .is_ascii:
     mov ah, 0Eh
     cmp al, 8
     je .backspace
     cmp al, 13
     je .newline
+    cmp al, 9
+    je .tab
     int 10h
     jmp .done
 
-.backspace:
+  .backspace:
     call graphics_get_cursor
     cmp dl, 0                       ; See if the column number is 0
     jne .backspace_normal           ; If it isn't then jump to normal backspace
@@ -63,7 +63,7 @@ keyboard_input:     ; Keyboard input routine
     call graphics_move_end_line
     jmp .done
 
-.backspace_normal:
+  .backspace_normal:
     mov ah, 0Eh
     mov al, 8
     int 10h
@@ -73,10 +73,12 @@ keyboard_input:     ; Keyboard input routine
     int 10h
     jmp .done
 
-.newline:
+  .newline:
     call graphics_get_cursor    ; Get cursor row and column
     cmp dh, 23                  ; Compare row to last row
     je .done                    ; If last row then finish, otherwise continue
+    mov ax, 1
+    mov [newlineTyped], ax      ; If the newline is successful then set the newlineTyped varaible to "true"
     mov ah, 0Eh
     mov al, 13
     int 10h
@@ -84,7 +86,13 @@ keyboard_input:     ; Keyboard input routine
     int 10h
     jmp .done
 
-.right_arrow:
+  .tab:
+    call graphics_get_cursor    ; Get the cursor row and column
+    add dl, 2     ; Add 2 to the column register for the graphics cursor function(s)
+    call graphics_move_cursor
+    jmp .done   ; Now finish.
+
+  .right_arrow:
     call graphics_get_cursor
     inc dl
     cmp dl, 81
@@ -97,7 +105,7 @@ keyboard_input:     ; Keyboard input routine
     call graphics_move_cursor
     jmp .done
 
-.left_arrow:
+  .left_arrow:
     call graphics_get_cursor
     cmp dl, 0
     jne .left_arrow_not_begining_line
@@ -112,6 +120,8 @@ keyboard_input:     ; Keyboard input routine
     call graphics_move_cursor
     jmp .done
 
-.done:
+  .done:
     popa
     ret
+
+newlineTyped dw 0xa402

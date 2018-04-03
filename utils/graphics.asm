@@ -77,16 +77,16 @@ graphics_print_string:
 
 	mov ah, 0Eh    ; Function code
 
-.repeat:
-	lodsb				; Get char from string
-	cmp al, 0
-	je .done			; If char is zero, finish
-	int 10h				; Else, call 10h interrupt
-	jmp .repeat			; And then loop
+  .repeat:
+  	lodsb				; Get char from string
+  	cmp al, 0
+  	je .done			; If char is zero, finish
+  	int 10h				; Else, call 10h interrupt
+  	jmp .repeat			; And then loop
 
-.done: ; finish function
-	popa
-	ret
+  .done: ; finish function
+  	popa
+  	ret
 
 ; ============================================ ;
 ; Move Cursor to End of Line Routine
@@ -110,7 +110,7 @@ graphics_move_end_line:
         cmp al, 32                  ; Test to see if character is space
         je .loop_find_character
     inc dl                          ; If there is a character increment column one and continue
-.done:
+  .done:
     call graphics_move_cursor
     call graphics_show_cursor
     popa
