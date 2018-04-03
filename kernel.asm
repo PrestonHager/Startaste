@@ -34,8 +34,8 @@ kernel_update:
 	cmp ax, 0            ; compare the newlineTyped varaible to 0, if true then it's not a newline.
 	je .done_not_newline
 	; Is a newline and a command has been sent.
-	mov si, DEBUG_MSG
-	call graphics_print_string
+	; mov si, DEBUG_MSG
+	; call graphics_print_string
   ; Reset the variable.
   mov ax, 0
   mov [newlineTyped], ax
