@@ -5,15 +5,15 @@
 ; Arguments: None
 ; ============================================ ;
 keyboard_test_input:    ; Testfor input routine
-    pusha
-    mov ah, 01h     ; Function code
-    int 16h
-    jz .done
-    ; otherwise there was a key press...
-    popa
-    mov ah, 00h     ; Function code
-    int 16h         ; Call 16h interrupt
-    ret             ; Return with values in ah and al
+  pusha
+  mov ah, 01h     ; Function code
+  int 16h
+  jz .done
+  ; otherwise there was a key press...
+  popa
+  mov ah, 00h     ; Function code
+  int 16h         ; Call 16h interrupt
+  ret             ; Return with values in ah and al
   .done:      ; Finish routine
     popa
     ret
@@ -124,4 +124,4 @@ keyboard_input:     ; Keyboard input routine
     popa
     ret
 
-newlineTyped dw 0xa402
+newlineTyped db 0
