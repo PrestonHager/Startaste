@@ -28,7 +28,7 @@ bootloader:
   ; if the disk doesn't load. then jump to printing an error.
   jc .error
   cmp al, KERNEL_SIZE  ; compare to see if we read the expected amount of sectors.
-	jne .error
+  jne .error
   ; otherwise go to the kernel
   jmp 0x07C0:KERNEL_OFFSET
 

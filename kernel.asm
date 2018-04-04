@@ -16,11 +16,10 @@ kernel_start:
 
   ; Set data segment to the begining of the kernel (to encapsul all the data).
   mov ax, 0x0  ; ax = bootlaoder location 16bit memory address (loc/16).
-	mov ds, ax ; set ds to location.
+  mov ds, ax ; set ds to location.
 
   ; set up default values.
-  mov ax, 0
-  mov [newlineTyped], ax
+  mov [newlineTyped], BYTE 0
 
   ; now run the graphics.
   mov ax, WELCOME_MSG		; Top bar message
@@ -34,13 +33,15 @@ kernel_update:
 	cmp ax, 0            ; compare the newlineTyped varaible to 0, if true then it's not a newline.
 	je .done_not_newline
 	; Is a newline and a command has been sent.
-	; mov si, DEBUG_MSG
-	; call graphics_print_string
+  ; call graphics_get_cursor    ; get the cursor to find the row to read.
+  ; dec dh                      ; decrement dh by 1 to get previous row.
+  ; call graphics_get_line      ; get the previous line.
+	; call graphics_print_string  ; graphics_get_line returns the string in si, exactly where graphics_print_string get it's input from.
   ; Reset the variable.
   mov ax, 0
   mov [newlineTyped], ax
-	.done_not_newline:
-	jmp kernel_update		; run update loop
+  .done_not_newline:
+  jmp kernel_update		; run update loop
 
   WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
   DEBUG_MSG db 'debugMsg.', 0
