@@ -1,0 +1,7 @@
+*.tmp.*
+*.flp
+*.bin
+*.o
+*.c
+*.zip
+mikeos-4.5/
