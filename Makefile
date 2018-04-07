@@ -14,7 +14,7 @@ all: run clean
 
 run: os.img
 	@echo "Running the emulator using compiled image."
-	@qemu-system-i386 -readconfig emulator.config
+	@qemu-system-i386 -readconfig emulator_config.txt
 
 os.img: os0.tmp os1.tmp
 	@$(CAT_COMMAND) os0.tmp os1.tmp > os.img
