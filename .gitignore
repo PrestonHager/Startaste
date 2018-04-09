@@ -4,4 +4,4 @@
 *.o
 *.c
 *.zip
-mikeos-4.5/
+*.tmp
