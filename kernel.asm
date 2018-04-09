@@ -28,15 +28,15 @@ kernel_start:
   call graphics_background	; Call draw background routine
 
 kernel_update:
-	call keyboard_input
+  call keyboard_input
   mov ax, [newlineTyped]
-	cmp ax, 0            ; compare the newlineTyped varaible to 0, if true then it's not a newline.
-	je .done_not_newline
-	; Is a newline and a command has been sent.
-  ; call graphics_get_cursor    ; get the cursor to find the row to read.
-  ; dec dh                      ; decrement dh by 1 to get previous row.
-  ; call graphics_get_line      ; get the previous line.
-	; call graphics_print_string  ; graphics_get_line returns the string in si, exactly where graphics_print_string get it's input from.
+  cmp ax, 0            ; compare the newlineTyped varaible to 0, if true then it's not a newline.
+  je .done_not_newline
+  ; Is a newline and a command has been sent.
+  call graphics_get_cursor    ; get the cursor to find the row to read.
+  dec dh                      ; decrement dh by 1 to get previous row.
+  call graphics_get_line      ; get the previous line.
+  call graphics_print_string  ; graphics_get_line returns the string in si, exactly where graphics_print_string get it's input from.
   ; Reset the variable.
   mov ax, 0
   mov [newlineTyped], ax
