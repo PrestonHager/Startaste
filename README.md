@@ -15,3 +15,7 @@ If you haven't installed GNU Cat on your windows computer, use `make platform=wi
 
 ## Bugs and Development
 If you find a bug, or have a suggestion please report it in the [issues tab](https://github.com/PrestonHager/Startaste/issues) of the git repository. If you would like to help us create the OS then create a new pull request in the [request tab](https://github.com/PrestonHager/Startaste/pull) of the repository.
+
+-----
+
+Copyright © 2018 Preston Hager
