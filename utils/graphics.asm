@@ -68,6 +68,27 @@ graphics_get_character: ; Get character routine
   ret
 
 ; ============================================ ;
+; Get Character XY Routine
+; Arguments: dh: x coord, dl: y coord
+; Outputs: dh: Color, dl: Character
+; ============================================ ;
+graphics_get_character_xy:
+  pusha
+  mov al, dh
+  mov bl, 160
+  mul bl            ; AX = x * 80 * 2
+  xor bx, bx
+  mov bl, dl
+  add bx, bx        ; BX = y * 2
+  add ax, bx        ; AX = x*160 + y*2
+  mov si, ax
+  mov ax, 0x0B800
+  mov es, ax        ; ES:SI points to the character at the coordinates X, Y
+  mov dl, [es:si]   ; DL has the ASCII code of the character at coordinates X, Y
+  mov dh, [es:si+2] ; DH has the collor code of the character
+  popa
+
+; ============================================ ;
 ; Get Line Routine
 ; Arguments: dh: Line
 ; Outputs: si: Line ASCII
@@ -75,28 +96,30 @@ graphics_get_character: ; Get character routine
 graphics_get_line:
   pusha
   pop si      ; pop si so we can write to it
-  call graphics_get_cursor
-  mov [graphics_get_line_row_save], dh      ; dh: row; dl: column
-  mov [graphics_get_line_column_save], dl   ; get the current cursor and save it in memory in graphics_get_line_row_save and graphics_get_line_column_save
+  ; call graphics_get_cursor
+  ; mov [graphics_get_line_row_save], dh      ; dh: row; dl: column
+  ; mov [graphics_get_line_column_save], dl   ; get the current cursor and save it in memory in graphics_get_line_row_save and graphics_get_line_column_save
   mov si, WORD 0
   mov dl, 0   ; set the column of the cursor to 0 and move it, this will set it at the begining of the selected line.
-  call graphics_move_cursor
+  ; call graphics_move_cursor
 
   .repeat:
-    call graphics_get_character
+    call graphics_get_character_xy
     mov [si], dl               ; get the character and move it into the si register
     inc si      ; increment offset by 1
-    call graphics_get_cursor
-    cmp dl, 80
-    je .done      ; compare column to last column and if last then finish.
+    ; call graphics_get_cursor
+    ; cmp dl, 80
+    ; je .done      ; compare column to last column and if last then finish.
     inc dl                      ; get the cursor again and move it one column to the right
-    call graphics_move_cursor
+    cmp dl, 81
+    je .done
+    ; call graphics_move_cursor
     jmp .repeat
 
   .done:
-    mov dh, [graphics_get_line_row_save]
-    mov dl, [graphics_get_line_column_save]   ; move memory values for saved row and column into dh/dl for moving cursor back to original position
-    call graphics_move_cursor
+    ; mov dh, [graphics_get_line_row_save]
+    ; mov dl, [graphics_get_line_column_save]   ; move memory values for saved row and column into dh/dl for moving cursor back to original position
+    ; call graphics_move_cursor
     push si     ; make sure si is preserved
     popa
 
