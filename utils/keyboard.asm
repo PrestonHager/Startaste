@@ -21,6 +21,7 @@ keyboard_test_input:    ; Testfor input routine
 ; ============================================ ;
 ; Keyboard Input Routine
 ; Arguments: None
+; Outputs: ax: Newline entered (1 = true, 0 = false)
 ; ============================================ ;
 keyboard_input:     ; Keyboard input routine
     pusha
@@ -77,8 +78,9 @@ keyboard_input:     ; Keyboard input routine
     call graphics_get_cursor    ; Get cursor row and column
     cmp dh, 23                  ; Compare row to last row
     je .done                    ; If last row then finish, otherwise continue
+    pop ax
     mov ax, 1
-    mov [newlineTyped], ax      ; If the newline is successful then set the newlineTyped varaible to "true"
+    push ax
     mov ah, 0Eh
     mov al, 13
     int 10h
