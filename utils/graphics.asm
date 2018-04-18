@@ -70,35 +70,36 @@ graphics_get_character: ; Get character routine
 ; ============================================ ;
 ; Get Line Routine
 ; Arguments: dh: Line
-; Outputs: si: Line ASCII
+; Outputs: si: Line ASCII (which is also at memory location labeled, "graphics_get_line_string")
 ; ============================================ ;
 graphics_get_line:
   pusha
-  pop si      ; pop si so we can write to it
-  call graphics_get_cursor
-  mov [graphics_get_line_row_save], dh      ; dh: row; dl: column
-  mov [graphics_get_line_column_save], dl   ; get the current cursor and save it in memory in graphics_get_line_row_save and graphics_get_line_column_save
-  mov si, WORD 0
-  mov dl, 0   ; set the column of the cursor to 0 and move it, this will set it at the begining of the selected line.
-  call graphics_move_cursor
+
+  mov ax, 0xB800
+  ; add ax, dh
+  mov es, ax              ; move the memory address of the start of the video screen into extra segment.
+  mov si, 0               ; the source index is the offset which starts at 0 plus 2 * dh (the line number) * 80.
+  mov ax, 160
+  mul dh
+  add si, ax
+  mov di, 0               ; the destination index is the offset for moving a character into memory.
+  mov cx, 80              ; counting register set to the number of times to run the loop.
 
   .repeat:
-    call graphics_get_character
-    mov [si], dl               ; get the character and move it into the si register
-    inc si      ; increment offset by 1
-    call graphics_get_cursor
-    cmp dl, 80
-    je .done      ; compare column to last column and if last then finish.
-    inc dl                      ; get the cursor again and move it one column to the right
-    call graphics_move_cursor
-    jmp .repeat
+    mov ax, [es:si]       ; move the character at memory address es:si into ax. this will be the first 8 bits which is the character code.
+    mov [graphics_get_line_string + di], ax     ; move the character in ax to the graphics_get_line_string variable location.
+    add si, 2
+    add di, 1
+    dec cx
+    cmp cx, 0           ; run loop 80 times. adding 2 to si each time makes it 160 at the end.
+    jne .repeat
+
+  mov [graphics_get_line_string + 80], DWORD 0    ; the last character has a color code that isn't writen over so write a null over it.
 
   .done:
-    mov dh, [graphics_get_line_row_save]
-    mov dl, [graphics_get_line_column_save]   ; move memory values for saved row and column into dh/dl for moving cursor back to original position
-    call graphics_move_cursor
-    push si     ; make sure si is preserved
     popa
+    mov si, graphics_get_line_string
+    ret
 
 ; ============================================ ;
 ; Print String Routine
@@ -153,7 +154,7 @@ graphics_move_end_line:
 ; Arguments: ax: Top Text, bx: Bottom Text, cx: Color
 ; Outputs: None
 ; ============================================ ;
-graphics_background:     ; Draw background routine
+graphics_background:
   pusha
   push ax				; Store params to pop out later
   push bx
@@ -193,25 +194,24 @@ graphics_background:     ; Draw background routine
   int 10h
 
   mov dh, 24
-  mov dl, 1
+  mov dl, 0
   call graphics_move_cursor
   pop bx				; Get bottom string param
   mov si, bx
   call graphics_print_string
 
   mov dh, 0
-  mov dl, 1
+  mov dl, 0
   call graphics_move_cursor
   pop ax				; Get top string param
   mov si, ax
   call graphics_print_string
 
-  mov dh, 1			; Ready for app text
+  mov dh, 1
   mov dl, 0
   call graphics_move_cursor
 
   popa
   ret
 
-graphics_get_line_row_save db 0
-graphics_get_line_column_save db 0
+graphics_get_line_string times 80 dw 0

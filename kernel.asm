@@ -50,5 +50,6 @@ kernel_update:
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
+%include "utils/interrupter.asm"
 
 times 1024-($-$$) db 0	; Padding for the rest of the kernel
