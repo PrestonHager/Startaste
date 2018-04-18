@@ -68,6 +68,27 @@ graphics_get_character: ; Get character routine
   ret
 
 ; ============================================ ;
+; Get Character XY Routine
+; Arguments: dh: x coord, dl: y coord
+; Outputs: dh: Color, dl: Character
+; ============================================ ;
+graphics_get_character_xy:
+  pusha
+  mov al, dh
+  mov bl, 160
+  mul bl            ; AX = x * 80 * 2
+  xor bx, bx
+  mov bl, dl
+  add bx, bx        ; BX = y * 2
+  add ax, bx        ; AX = x*160 + y*2
+  mov si, ax
+  mov ax, 0x0B800
+  mov es, ax        ; ES:SI points to the character at the coordinates X, Y
+  mov dl, [es:si]   ; DL has the ASCII code of the character at coordinates X, Y
+  mov dh, [es:si+2] ; DH has the collor code of the character
+  popa
+
+; ============================================ ;
 ; Get Line Routine
 ; Arguments: dh: Line
 ; Outputs: si: Line ASCII (which is also at memory location labeled, "graphics_get_line_string")

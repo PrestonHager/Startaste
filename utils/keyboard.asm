@@ -37,7 +37,7 @@ keyboard_input:     ; Keyboard input routine
 
   .is_scan_code:
     cmp ah, 4Bh
-    je .left_arrow
+    je near .left_arrow         ; I had to add the near jump here. I'm not entirely sure what this means or does. NOTE TO SELF: Research Later.
     cmp ah, 4Dh
     je .right_arrow
     jmp .done
