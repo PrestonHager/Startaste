@@ -23,8 +23,9 @@ keyboard_test_input:    ; Testfor input routine
 ; Arguments: None
 ; Outputs: ax: Newline entered (1 = true, 0 = false)
 ; ============================================ ;
-keyboard_input:     ; Keyboard input routine
-    pusha
+keyboard_input:
+  mov ax, 0       ; set default newline entered value to 0 (false).
+  pusha
 
   .repeat:
     mov al, 0
@@ -55,14 +56,9 @@ keyboard_input:     ; Keyboard input routine
 
   .backspace:
     call graphics_get_cursor
-    cmp dl, 0                       ; See if the column number is 0
+    cmp dl, 2                       ; See if the column number is 2
     jne .backspace_normal           ; If it isn't then jump to normal backspace
-    cmp dh, 1                       ; If the next row is the first row then don't go back a line
-    je .done
-    dec dh
-    call graphics_move_cursor
-    call graphics_move_end_line
-    jmp .done
+    jmp .done                       ; Otherwise, the user is in command mode and it shouldn't be moved
 
   .backspace_normal:
     mov ah, 0Eh
@@ -78,9 +74,9 @@ keyboard_input:     ; Keyboard input routine
     call graphics_get_cursor    ; Get cursor row and column
     cmp dh, 23                  ; Compare row to last row
     je .done                    ; If last row then finish, otherwise continue
-    pop ax
-    mov ax, 1
-    push ax
+    popa
+    mov ax, 1           ; pop ax and set it to 1 (newline typed) then push to preserve.
+    pusha
     mov ah, 0Eh
     mov al, 13
     int 10h
@@ -125,5 +121,3 @@ keyboard_input:     ; Keyboard input routine
   .done:
     popa
     ret
-
-newlineTyped db 0

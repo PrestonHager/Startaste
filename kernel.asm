@@ -18,38 +18,49 @@ kernel_start:
   mov ax, 0x0  ; ax = bootlaoder location 16bit memory address (loc/16).
   mov ds, ax ; set ds to location.
 
-  ; set up default values.
-  mov [newlineTyped], BYTE 0
-
   ; now run the graphics.
   mov ax, WELCOME_MSG		; Top bar message
   mov bx, navigation_msg	; Bottom bar message (blank/empty)
   mov cx, 0x38			; Main background color and char color
   call graphics_background	; Call draw background routine
+  mov si, COMMAND_MSG         ; and prompt user for next command.
+  call graphics_print_string
 
 kernel_update:
   call keyboard_input
-  mov ax, [newlineTyped]
-  cmp ax, 0            ; compare the newlineTyped varaible to 0, if true then it's not a newline.
-  je .done_not_newline
-  ; Is a newline and a command has been sent.
-  call graphics_get_cursor    ; get the cursor to find the row to read.
-  dec dh                      ; decrement dh by 1 to get previous row.
-  call graphics_get_line      ; get the previous line.
-  call graphics_print_string  ; graphics_get_line returns the string in si, exactly where graphics_print_string get it's input from.
-  ; Reset the variable.
-  mov ax, 0
-  mov [newlineTyped], ax
-  .done_not_newline:
-  jmp kernel_update		; run update loop
+  cmp ax, 0            ; compare the ax register to 0, 1 is true, 0 is false.
+  je .done
+  .newline_entered:
+    ; Is a newline and a command has been sent.
+    call graphics_get_cursor    ; get the cursor to find the row to read.
+    dec dh                      ; decrement dh by 1 to get previous row.
+    call graphics_get_line      ; get the previous line.
+    call interrupter_run_command; interrupt the command.
+    cmp ax, 0                   ; test to see if the command code returned is 0 (it means quit/hang)
+    je .hang
+    call graphics_print_string  ; print out what the command returned.
+    mov si, COMMAND_MSG         ; and prompt user for next command.
+    call graphics_print_string
+    ; Reset the variable.
+    mov ax, 0
+  .done:
+    jmp kernel_update		; run update loop
+  .hang:
+    call graphics_clear_screen
+    mov si, QUIT_MSG
+    call graphics_print_string
+    jmp .hang
 
   WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
   DEBUG_MSG db 'debugMsg.', 0
   navigation_msg db 'Nebula > Formation', 0
   BLANK_MSG db '', 0
+  COMMAND_MSG db '> ', 0
+  QUIT_MSG db 'HUNG STARTASTE', 0
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
 %include "utils/interrupter.asm"
+%include "utils/string.asm"
 
-times 1024-($-$$) db 0	; Padding for the rest of the kernel
+times 1536-($-$$) db 0	; Padding for the rest of the kernel

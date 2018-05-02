@@ -4,7 +4,7 @@
 BITS 16
 
 KERNEL_OFFSET equ 0x200
-KERNEL_SIZE equ 0x2
+KERNEL_SIZE equ 0x3
 
 mov [BOOT_DRIVE], dl  ; save the bootdrive number for later use.
 

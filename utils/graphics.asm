@@ -171,6 +171,30 @@ graphics_move_end_line:
     ret
 
 ; ============================================ ;
+; Clear Screen Routine
+; Arguments: None
+; Outputs: None
+; ============================================ ;
+graphics_clear_screen:
+  pusha
+
+  mov dl, 0
+  mov dh, 0
+  call graphics_move_cursor       ; first, set the cursor to 0, 0
+
+  ; then print a lot of spaces with black background.
+  mov ah, 09h     ; function code
+  mov bh, 0       ; page number
+  mov bl, 0x00    ; color code
+  mov cx, 80*25   ; number of times to print char.
+  mov al, ' '     ; the character
+  int 10h         ; call the BIOS call of video services.
+
+  .done:
+    popa
+    ret
+
+; ============================================ ;
 ; Draw Background Routine
 ; Arguments: ax: Top Text, bx: Bottom Text, cx: Color
 ; Outputs: None
