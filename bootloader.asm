@@ -13,24 +13,24 @@ bootloader:
   mov sp, bp
 
   .read_disk:
-  ; read the disk
-  mov bx, KERNEL_OFFSET   ; set the offset.
-  mov ax, 0x07C0
-  mov es, ax
-	mov dl, [BOOT_DRIVE]
-  mov ah, 02h ; function: read sectors from drive
-  mov al, KERNEL_SIZE ; sectors to read
-  mov ch, 0x0 ; tracks
-  mov cl, 0x2 ; sector number
-  mov dh, 0x0 ; head
-  mov dl, 0x80 ; drive
-  int 0x13
-  ; if the disk doesn't load. then jump to printing an error.
-  jc .error
-  cmp al, KERNEL_SIZE  ; compare to see if we read the expected amount of sectors.
-  jne .error
-  ; otherwise go to the kernel
-  jmp 0x07C0:KERNEL_OFFSET
+    ; read the disk
+    mov bx, KERNEL_OFFSET   ; set the offset.
+    mov ax, 0x07C0
+    mov es, ax
+  	mov dl, [BOOT_DRIVE]
+    mov ah, 02h ; function: read sectors from drive
+    mov al, KERNEL_SIZE ; sectors to read
+    mov ch, 0x0 ; tracks
+    mov cl, 0x2 ; sector number
+    mov dh, 0x0 ; head
+    mov dl, 0x80 ; drive
+    int 0x13
+    ; if the disk doesn't load. then jump to printing an error.
+    jc .error
+    cmp al, KERNEL_SIZE  ; compare to see if we read the expected amount of sectors.
+    jne .error
+    ; otherwise go to the kernel
+    jmp 0x07C0:KERNEL_OFFSET
 
   .error:
     mov si, ERROR_MSG
