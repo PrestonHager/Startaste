@@ -4,7 +4,11 @@ Another OS! This was made simply as a side project, don't expect it to be great.
 ------
 
 ## Install
-To install Startaste download the source package via git or zip. `git clone https://github.com/PrestonHager/Startaste.git` to pull via git, or download link [here](https://github.com/PrestonHager/Startaste/archive/release.zip). Then in a terminal run it using `make`, or executing the commands in the `Makefile`. If you're wanting to run a different bootloader simply add the variable, `bootloader` in the command line; as such, `make bootloader=[filename]`. You will also need to install [QEMU](https://qemu.org), I'm working on making the entire package independent to compile and emulate, but until then we'll just have to make do.
+To install Startaste download the source package via git or zip. `git clone https://github.com/PrestonHager/Startaste.git` to pull via git, or download link [here](https://github.com/PrestonHager/Startaste/archive/release.zip). Then in a terminal run it using `make`, or executing the commands in the `Makefile`.
+
+If you're wanting to run a different bootloader simply add the variable, `bootloader` in the command line; as such, `make bootloader=[filename]`.
+
+You will also need to install [QEMU](https://qemu.org), I'm working on making the entire package independent to compile and emulate, but until then you must install QEMU first.
 
 ------
 
