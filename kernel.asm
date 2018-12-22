@@ -41,7 +41,7 @@ kernel_update:
     call graphics_print_string  ; print out what the command returned.
     mov si, COMMAND_MSG         ; and prompt user for next command.
     call graphics_print_string
-    ; Reset the variable.
+    ; Reset the return code variable.
     mov ax, 0
   .done:
     jmp kernel_update		; run update loop
@@ -49,14 +49,15 @@ kernel_update:
     call graphics_clear_screen
     mov si, QUIT_MSG
     call graphics_print_string
-    jmp .hang
+    jmp $
 
   WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
   DEBUG_MSG db 'debugMsg.', 0
   navigation_msg db 'Nebula > Formation', 0
+  navigation_buffer times 80 db 0
   BLANK_MSG db '', 0
   COMMAND_MSG db '> ', 0
-  QUIT_MSG db 'HUNG STARTASTE', 0
+  QUIT_MSG db 'STARTASTE HAS STOPPED. PLEASE TURN OFF COMPUTER.', 0
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"

@@ -144,6 +144,28 @@ graphics_print_string:
   	ret
 
 ; ============================================ ;
+; Print Number Routine
+; Arguments: si: Message Location (ten-terminated number sequence)
+; Outputs: None
+; ============================================ ;
+graphics_print_number:
+	pusha
+
+	mov ah, 0Eh    ; Function code
+
+  .repeat:
+  	lodsb				; Get char from string
+  	cmp al, 10
+  	je .done			; If char is zero, finish
+    add al, '0'   ; add char '0' to al, to make it a number
+  	int 10h				; Else, call 10h interrupt
+  	jmp .repeat			; And then loop
+
+  .done: ; finish function
+  	popa
+  	ret
+
+; ============================================ ;
 ; Move Cursor to End of Line Routine
 ; Arguments: dh: Line
 ; Outputs: None
@@ -185,10 +207,14 @@ graphics_clear_screen:
   ; then print a lot of spaces with black background.
   mov ah, 09h     ; function code
   mov bh, 0       ; page number
-  mov bl, 0x00    ; color code
+  mov bl, 0x0F    ; color code
   mov cx, 80*25   ; number of times to print char.
   mov al, ' '     ; the character
   int 10h         ; call the BIOS call of video services.
+
+  mov dl, 0
+  mov dh, 0
+  call graphics_move_cursor
 
   .done:
     popa

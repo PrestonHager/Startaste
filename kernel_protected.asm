@@ -5,6 +5,7 @@ BITS 32
 
 kernel_main:
 .start:
+  jmp $
   ; start the graphics.
   mov ax, WELCOME_MSG		; Top bar message
   mov cx, 0x38			; Main background color and char color
