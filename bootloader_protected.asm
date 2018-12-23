@@ -1,41 +1,76 @@
-; bootloader for Startaste OS. This boot's the kernel.
-
-[org 0x7C00]
-BITS 16
+; bootloader for Startaste OS.
+[BITS 16]
+[ORG 0x7C00]
 
 bootloader:
+  ; first load the kernel into memory, then enter protected mode, and jump to the kernel.
+
   mov bp, 0x9000  ; update the base and stack pointers.
   mov sp, bp
 
-  .protected_mode:
-    ; enter into protected mode
-    cli   ; clear interrupts
-    lgdt [gdt_descriptor]   ; load global descriptor table.
-    mov eax, cr0
-    or al, 1      ; set bit in CR0 to 1 for protected mode.
-    mov cr0, eax
+  .read_disk:
+    ; read the disk
+    mov bx, KERNEL_OFFSET   ; set the offset.
+    mov ax, 0x07C0
+    mov es, ax
+    mov dl, [BOOT_DRIVE]
+    mov ah, 02h ; function: read sectors from drive
+    mov al, KERNEL_SIZE ; sectors to read
+    mov ch, 0x0 ; tracks
+    mov cl, 0x2 ; sector number
+    mov dh, 0x0 ; head
+    mov dl, 0x80 ; drive
+    int 0x13
+    ; if the disk doesn't load. then jump to printing an error.
+    jc .error
+    cmp al, KERNEL_SIZE  ; compare to see if we read the expected amount of sectors.
+    jne .error
+    ; otherwise go to loading the gdt
+    jmp load_gdt
 
-    ; point at the new data segment
-    mov ax, DATA_SEG
+  .error:
+    mov si, ERROR_MSG
+    mov ah, 01h ; function: get status of last drive operation.
+    mov dl, 0x0 ; drive
+    int 0x13
+    add [si], ah
+    call print_string
+    jmp $
 
-    jmp CODE_SEG:enter_protected_mode
+  ; now load the gdt, and jump to the kernel.
+load_gdt:
+  cli                     ; disable interrupts.
+  xor ax, ax
+  mov ds, ax              ; set data segment to 0 (used by lgdt)
 
-BITS 32
-enter_protected_mode:
-  ; point at the new data segment
-  mov ax, DATA_SEG
-  mov ds, ax
-  mov ss, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
+  lgdt [gdt_descriptor]   ; load the GDT descriptor
 
-  mov ebp, 0x90000      ; update the stack position because we now have more bits!
-  mov esp, ebp
+  mov eax, cr0            ; copy the contents of cr0 into eax
+  or eax, 1               ; set bit 0 to 1
+  mov cr0, eax            ; copy the contents of eax back into cr0
 
-  jmp 0x07C0:0x200
+  jmp 08h:protected_mode  ; jump to code segment, offset protected_mode
+
+[BITS 32]                       ; We now need 32-bit instructions
+protected_mode:
+  mov ax, 10h             ; Save data segment identifyer
+  mov ds, ax              ; Move a valid data segment into the data segment register
+  mov ss, ax              ; Move a valid data segment into the stack segment register
+  mov esp, 090000h        ; Move the stack pointer to 090000h
+
+  jmp 08h:kernel_start_offset
+
+  jmp $   ; should never get to here.
+
+ERROR_MSG db "Error in booting.", 0
+BOOT_DRIVE db 0
+KERNEL_OFFSET equ 0x200
+KERNEL_SIZE equ 0x1
 
 %include "utils/gdt.asm"
+%include "utils/print_string.asm"
 
 times 510-($-$$) db 0	; Padding for the rest of boot sector minus 2 special chars
 dw 0xAA55
+
+kernel_start_offset:  ; all the kernel code is automaticly loaded after this.

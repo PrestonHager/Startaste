@@ -3,11 +3,6 @@
 [org 0x7C00]
 BITS 16
 
-KERNEL_OFFSET equ 0x200
-KERNEL_SIZE equ 0x3
-
-mov [BOOT_DRIVE], dl  ; save the bootdrive number for later use.
-
 bootloader:
   mov bp, 0x9000  ; update the base and stack pointers.
   mov sp, bp
@@ -43,6 +38,8 @@ bootloader:
 
 ERROR_MSG db "Error in booting.", 0
 BOOT_DRIVE db 0
+KERNEL_OFFSET equ 0x200
+KERNEL_SIZE equ 0x3
 
 %include "utils/print_string.asm"
 

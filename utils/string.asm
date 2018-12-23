@@ -35,8 +35,8 @@ string_length:
   .find:
     lodsb
     inc bx      ; increase string length var by 1
-    cmp al, 0   ; check if the end of the string.
-    jne .find
+    or al, al   ; check if the end of the string.
+    jnz .find
 
   .done:
     dec bx      ; the actual length is one more since we compare the character after we increase bx.

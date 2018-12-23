@@ -1,17 +1,24 @@
 # The Assembler (default=nasm):
-ASSEMBLER=nasm
+ASM=nasm
 # The default catanation command, (cat for most linux systems, type for windows).
-CAT_COMMAND=cat
+CAT=cat
 # The default compiler, (gcc for linux systems. not installed on windows.)
 # COMPILER=gcc
 # The default linker, (ld for linux systems. not installed on windows.)
 # LINKER=ld
 # Default file name in case it isn't passed in:
-bootloader=bootloader.asm
-kernel=kernel.asm
+bootloader=bootloader
+kernel=kernel
+type=kernel
+
+ifeq ($(type), boot)
+	files = $(bootloader).o
+else
+	files = $(bootloader).o $(kernel).o
+endif
 
 ifeq ($(platform), win)
-	CAT_COMMAND = type
+	CAT = type
 endif
 
 all: run clean
@@ -20,27 +27,18 @@ run: os.img
 	@ echo "Running the emulator using compiled image."
 	@ qemu-system-i386 -readconfig emulator_config.txt
 
-os.img: os0.tmp os1.tmp
+os.img: $(files)
 	@ echo "Catanating files to make image."
-	@ $(CAT_COMMAND) os0.tmp os1.tmp > os.img
+	@ $(CAT) $(files) > os.img
 
-os0.tmp:
-	@ echo "Assembling bootloader file."
-	@ $(ASSEMBLER) -f bin -o os0.tmp $(bootloader)
-os1.tmp:
-	@ echo "Assembling kernel file."
-	@ $(ASSEMBLER) -f bin -o os1.tmp $(kernel)
-
-# os1.o:
-# 	@ echo "Compiling kernel file."
-# 	@ $(ASSEMBLER) -f elf -o boot.tmp $(bootloader)
-# 	@ $(COMPILER) -m32 -ffreestanding -c $(kernel) -o kernel.o
-# 	@ $(LINKER) -o boot.tmp -Ttext 0x8000 kernel.o --oformat binary
+%.o: %.asm
+	@ echo "Assembling $<."
+	@ $(ASM) -f bin -o $@ $<
 
 clean:
 	@ echo "Cleaning up the temporary files."
-	@ rm os0.tmp os1.tmp
+	@ rm *.o
 
 clean-full:
 	@ echo "Cleaning all files."
-	@ rm os0.tmp os1.tmp os.img
+	@ rm *.o os.img

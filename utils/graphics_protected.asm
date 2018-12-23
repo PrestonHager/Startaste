@@ -32,16 +32,17 @@ graphics_move_cursor:
 graphics_print_string:
   pusha
 
-  mov ecx, _GRAPHICS_CURSOR  ; move the current cursor position into cx
-  add ecx, _GRAPHICS_SCREEN  ; and add the base screen address
+  mov ecx, [_GRAPHICS_CURSOR] ; move the current cursor position into cx
+  add ecx, _GRAPHICS_SCREEN   ; and add the base screen address
 
   .repeat:
-    mov dl, [eax]       ; load the current character into the first half of bx
-    cmp dl, 0           ; make sure it's not the end of the string.
+    mov dl, [eax]             ; load the current character into the first half of bx
+    cmp dl, 0                 ; make sure it's not the end of the string.
     je .done
-    mov [ecx], bx       ; mov ax into the screen plus the offset.
-    add cx, 2           ; increase the offset by 2 (length of character)
-    add eax, 1          ; increase the string pointer by 1
+    mov byte [ds:ecx], dl     ; move dl into the screen plus the offset.
+    mov byte [ds:ecx+1], bl   ; put the color on that character position.
+    add ecx, 2                ; increase the offset by 2 (length of character)
+    add eax, 1                ; increase the string pointer by 1.
     jmp .repeat
 
   .done:
