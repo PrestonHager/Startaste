@@ -3,12 +3,7 @@
 [ORG 0x8000]
 
 kernel_main:
-  mov byte [ds:0B8000h], 'P'      ; Move the ASCII-code of 'P' into first video memory
-  mov byte [ds:0B8001h], 38h      ; Assign a color code
   ; start the graphics.
-  mov eax, WELCOME_MSG		      ; move welcome message pointer to eax
-  mov bl, 0x38			            ; main background color and char color
-  call graphics_print_string	  ; call printing the message
 
 .update:
   jmp .update
