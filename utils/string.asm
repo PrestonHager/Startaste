@@ -61,8 +61,8 @@ string_lower:
     add al, 32
     mov [si - 1], al
   .done_repeat:
-    cmp al, 0
-    jne .repeat
+    or al, al
+    jnz .repeat
 
   .done:
     popa
@@ -82,8 +82,8 @@ string_compare:
     mov dl, [di]
     cmp al, dl
     jne .done_false
-    cmp al, 0
-    je .done
+    or al, al
+    jz .done
     inc si
     inc di
     jmp .repeat
