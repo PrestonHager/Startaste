@@ -25,7 +25,7 @@ all: run clean
 
 run: os.img
 	@ echo "Running the emulator using compiled image."
-	@ qemu-system-i386 -readconfig emulator_config.txt -monitor stdio
+	@ qemu-system-i386 -readconfig emulator_config.txt
 
 os.img: $(files)
 	@ echo "Catanating files to make image."
