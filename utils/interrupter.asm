@@ -23,6 +23,10 @@ interrupter_run_command:
   call string_compare
   cmp bx, 1
   je .quit_command
+  mov di, interrupter_COMMANDS_debug_command          ; test the debug command
+  call string_compare
+  cmp bx, 1
+  je .debug_command
 
   ; if it doesn't match with anything, then put msg not found, and code 2.
   mov si, interrupter_MSGS_not_found  ; move cmd not found msg into default.
@@ -38,6 +42,16 @@ interrupter_run_command:
     mov si, interrupter_MSGS_null
     mov ax, 0                         ; set the return code.
     jmp .done
+  .debug_command:
+    mov si, interrupter_MSGS_debug
+    mov ax, [DATA_AREA_SIZE]
+    add ax, '0'
+    mov [si+6], ax
+    mov [si+7], byte 0xA
+    mov [si+8], byte 0xD
+    mov [si+9], byte 0
+    mov ax, 1
+    jmp .done
 
   .done:
     pop di
@@ -46,6 +60,8 @@ interrupter_run_command:
 
 interrupter_COMMANDS_help_command db 'help', 0
 interrupter_COMMANDS_quit_command db 'quit', 0
+interrupter_COMMANDS_debug_command db 'debug', 0
 interrupter_MSGS_help db 'Help:', 0xA, 0xD, 'help: shows this help message.', 0xA, 0xD, 'quit: hangs kernel.', 0xA, 0xD, 0
+interrupter_MSGS_debug db 'Debug '
 interrupter_MSGS_not_found db 'Command not found.', 0xA, 0xD, 0
 interrupter_MSGS_null db 0

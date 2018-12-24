@@ -18,6 +18,9 @@ kernel_start:
   mov ax, 0x0  ; ax = bootlaoder location 16bit memory address (loc/16).
   mov ds, ax ; set ds to location.
 
+  ; initialize the file system routines
+  call sfs_init
+
   ; now run the graphics.
   mov ax, WELCOME_MSG		; Top bar message
   mov bx, navigation_msg	; Bottom bar message (blank/empty)
@@ -63,5 +66,6 @@ kernel_update:
 %include "utils/keyboard.asm"
 %include "utils/interrupter.asm"
 %include "utils/string.asm"
+%include "utils/sfs.asm"
 
 times 1536-($-$$) db 0	; Padding for the rest of the kernel

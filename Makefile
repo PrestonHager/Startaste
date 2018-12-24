@@ -9,10 +9,15 @@ CAT=cat
 # Default file name in case it isn't passed in:
 bootloader=bootloader
 kernel=kernel
+filesystem=file_system_data
 type=kernel
 
 ifeq ($(type), boot)
 	files = $(bootloader).o
+else ifeq ($(type), fs)
+	files = $(bootloader).o $(kernel).o $(filesystem).o
+else ifeq ($(type), filesystem)
+	files = $(bootloader).o $(kernel).o $(filesystem).o
 else
 	files = $(bootloader).o $(kernel).o
 endif
