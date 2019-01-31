@@ -42,6 +42,7 @@ KERNEL_SIZE equ 0x3
 
 %include "utils/print_string.asm"
 
+; Simple File System Implementation
 times 404-($-$$) db 0   ; set all bytes past the bootloader up to offset 0x019C to 0
 sfs_sb:
   dq 0                          ; last alteration time of super-block values

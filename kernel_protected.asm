@@ -2,8 +2,21 @@
 [BITS 32]
 [ORG 0x8000]
 
+%define ROWS 25
+%define COLUMNS 80
+%define VID_MEM 0xb8000
+
 kernel_main:
   ; start the graphics.
+  mov ch, 0x90
+  call graphics_clear
+  mov bl, 2
+  mov dl, 0
+  mov cl, 'S'
+  mov ch, 0x90
+  mov si, WELCOME_MSG
+  call graphics_print_string
+  call graphics_put_char
 
 .update:
   jmp .update
