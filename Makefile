@@ -11,6 +11,7 @@ bootloader=bootloader
 kernel=kernel
 filesystem=file_system_data
 type=kernel
+qemu_args=
 
 ifeq ($(type), boot)
 	files = $(bootloader).o
@@ -30,7 +31,7 @@ all: run clean
 
 run: os.img
 	@ echo "Running the emulator using compiled image."
-	@ qemu-system-i386 -readconfig emulator_config.txt
+	@ qemu-system-i386 -readconfig emulator_config.txt $(qemu_args)
 
 os.img: $(files)
 	@ echo "Catanating files to make image."

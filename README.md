@@ -8,6 +8,8 @@ To install Startaste download the source package via git or zip. `git clone http
 
 If you're wanting to run a different bootloader simply add the variable, `bootloader` in the command line; as such, `make bootloader=[filename]`.
 
+By default the makefile will build the 32-bit protected mode OS. If you would like the 16-bit real mode OS, use the folder `16bit\` in front of any files.
+
 You will also need to install [QEMU](https://qemu.org), I'm working on making the entire package independent to compile and emulate, but until then you must install QEMU first.
 
 ------

@@ -20,12 +20,9 @@ kernel_main:
   mov dl, 0
   mov si, COMMAND_MSG
   call graphics_print_string
-  mov ch, 0x90
-  mov cl, [KEYBOARD_TYPE]
-  add cl, 48
-  call graphics_put_char
 
 .update:
+  ; NOTE: keyboard driver is not working at this time
   call keyboard_input
   cmp al, 0
   je .key_not_found
