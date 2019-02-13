@@ -20,16 +20,26 @@ kernel_main:
   mov dl, 0
   mov si, COMMAND_MSG
   call graphics_print_string
+  mov ch, 0x90
+  mov bl, 3
+  mov dl, 10
+  call graphics_move_cursor
 
 .update:
-  ; NOTE: keyboard driver is not working at this time
+  ; NOTE: keyboard driver is work in progress not all scancode set will work
   call keyboard_input
-  cmp al, 0
+  cmp cl, 0
   je .key_not_found
-  mov cl, al
   call graphics_get_cursor
-  call graphics_print_string
-  mov al, 0
+  call graphics_put_char
+  inc dl
+  cmp dl, 81
+  jne .next
+  mov dl, 1
+  inc bl
+  .next:
+  call graphics_move_cursor
+  mov cl, 0
   .key_not_found:
   jmp .update
 
@@ -41,5 +51,6 @@ QUIT_MSG db 'HUNG STARTASTE', 0
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
+%include "utils/keyboard_set2.asm"
 
-times 512-($-$$) db 0	; Padding for the rest of the kernel
+times 1024-($-$$) db 0	; Padding for the rest of the kernel

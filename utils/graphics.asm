@@ -106,16 +106,13 @@ graphics_print_string:
 ; Outputs: bl: Row, dl: Column
 ; ============================================ ;
 graphics_get_cursor:
-  pusha
-
+  push ax
   mov ax, [GRAPHICS_CURSOR_POSITION]
   mov dl, al
   mov bl, ah
-  push dx
-  push bx
 
   .done:
-  popa
+  pop ax
   ret
 
 ; ============================================ ;
@@ -134,9 +131,6 @@ graphics_move_cursor:
   mov eax, COLUMNS
   mul bl              ; row * columns
   add al, dl          ; (row * columns) + colum
-  mov bx, 2
-  mul bx              ; multiply everything by 2 because every character takes 2 bytes.
-  add eax, VID_MEM
   mov ebx, eax      ; it must be stored in bx so we can access it later on
 
   .low_byte:
