@@ -24,4 +24,4 @@ If you find a bug, or have a suggestion please report it in the [issues tab](htt
 
 -----
 
-Copyright © 2018 Preston Hager
+Copyright © 2019 Preston Hager
