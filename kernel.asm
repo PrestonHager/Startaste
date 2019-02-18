@@ -21,8 +21,8 @@ kernel_main:
   mov si, COMMAND_MSG
   call graphics_print_string
   mov ch, 0x90
-  mov bl, 3
-  mov dl, 10
+  mov bl, 1
+  mov dl, 2
   call graphics_move_cursor
 
 .update:
@@ -30,12 +30,46 @@ kernel_main:
   call keyboard_input
   cmp cl, 0
   je .key_not_found
+  mov ch, 0x90
   call graphics_get_cursor
+  cmp cl, 0x08
+  je .backspace
+  cmp cl, 0x10
+  je .enter_key
   call graphics_put_char
+  jmp .move_cursor
+  .backspace:
+    cmp dl, 0                   ; if: column != 0
+    je .column_0
+    dec dl                      ; then: column -= 1
+    jmp .column_0_next
+    .column_0:
+    cmp bl, 1                   ; if the row is 1 then don't delete any further
+    je .next
+    dec bl                      ; else: row -= 1
+    mov dl, 79                  ; column = 79 (actually column 80 bc 0-indexed)
+    ; test to see if the last character of the previous row is a space, if it isn't then delete and continue
+    mov eax, COLUMNS
+    mul bl
+    add al, dl
+    add eax, VID_MEM
+    cmp [eax], byte 0x20
+    jne .column_0_next
+    .find_space:
+    jmp .next
+    .column_0_next:
+    mov cl, 0x20
+    call graphics_put_char
+    jmp .next
+  .enter_key:
+    mov dl, 0
+    inc bl
+    jmp .next
+  .move_cursor:
   inc dl
-  cmp dl, 81
+  cmp dl, 80
   jne .next
-  mov dl, 1
+  mov dl, 0
   inc bl
   .next:
   call graphics_move_cursor

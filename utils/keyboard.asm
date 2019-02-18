@@ -6,7 +6,8 @@
 ; Outputs: cl: Character
 ; ============================================ ;
 keyboard_input:
-  mov cl, 0
+  push ax
+  mov cl, 0x00
 
   in al, 0x64       ; get the status port byte. If bit-0 is 1 then the keyboard buffer has something
   bt ax, 0          ; test bit-0
@@ -28,6 +29,7 @@ keyboard_input:
     call keyboard_set2_input
 
   .done:
+  pop ax
   ret
 
 ; ============================================ ;

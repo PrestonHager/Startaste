@@ -123,15 +123,14 @@ graphics_get_cursor:
 graphics_move_cursor:
   pusha
   ; set the cursor position variable
-  mov ax, 0
-  add al, dl
-  add ah, bl     ; add the lower bits onto ax
+  mov al, dl
+  mov ah, bl
   mov [GRAPHICS_CURSOR_POSITION], ax   ; move the value of eax into the location at GRAPHICS_CURSOR_POSITION
   ; calaculate the address of the character.
   mov eax, COLUMNS
   mul bl              ; row * columns
-  add al, dl          ; (row * columns) + colum
-  mov ebx, eax      ; it must be stored in bx so we can access it later on
+  add al, dl          ; (row * columns) + column
+  mov ebx, eax        ; it must be stored in bx so we can access it later on
 
   .low_byte:
   mov al, 0x0f
