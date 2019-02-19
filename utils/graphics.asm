@@ -44,6 +44,7 @@ graphics_clear:
     inc dx
     cmp dx, COLUMNS       ; if the counter has reached the end of the row, then we don't need to print the rest of the message.
     jne .top_msg
+    jmp .repeat
   .top_msg_finish:
     mov cl, ' '           ; put the character that we are printing, a space, into lower bytes of cx
   .top_msg_finish_:

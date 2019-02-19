@@ -55,9 +55,9 @@ kernel_main:
     mov cx, 2
     mul cx
     add eax, VID_MEM
+    mov dl, 79            ; for some reason the dx register had been reset, so we just move it back to the end of the row
     cmp [eax], byte 0x20
     jne .column_0_next
-    mov dl, 79            ; for some reason the dx register had been reset, so we just move it back to the end of the row
     .find_space:          ; if it is a space then, find the next non-space character, move back one space and return
     cmp dl, 0             ; if we get all the way to column 0 without finding a character then move on
     je .next
