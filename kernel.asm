@@ -22,7 +22,7 @@ kernel_main:
   call graphics_print_string
   mov ch, 0x90
   mov bl, 1
-  mov dl, 2
+  mov dl, 1
   call graphics_move_cursor
 
 .update:
@@ -49,16 +49,26 @@ kernel_main:
     dec bl                      ; else: row -= 1
     mov dl, 79                  ; column = 79 (actually column 80 bc 0-indexed)
     ; test to see if the last character of the previous row is a space, if it isn't then delete and continue
-    mov eax, COLUMNS
+    mov eax, COLUMNS      ; math for calculating video memory below
     mul bl
     add al, dl
+    mov cx, 2
+    mul cx
     add eax, VID_MEM
     cmp [eax], byte 0x20
     jne .column_0_next
-    .find_space:
+    mov dl, 79            ; for some reason the dx register had been reset, so we just move it back to the end of the row
+    .find_space:          ; if it is a space then, find the next non-space character, move back one space and return
+    cmp dl, 0             ; if we get all the way to column 0 without finding a character then move on
+    je .next
+    sub eax, 2
+    dec dl
+    cmp [eax], byte 0x20
+    je .find_space
+    inc dl
     jmp .next
     .column_0_next:
-    mov cl, 0x20
+    mov cx, 0x9020        ; cl=0x20, ch=0x90
     call graphics_put_char
     jmp .next
   .enter_key:
@@ -80,7 +90,7 @@ kernel_main:
 SECTION .data
 WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
 navigation_msg db 'Nebula > Formation', 0
-COMMAND_MSG db '> ', 0
+COMMAND_MSG db '>', 0
 QUIT_MSG db 'HUNG STARTASTE', 0
 
 %include "utils/graphics.asm"
