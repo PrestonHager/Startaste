@@ -47,15 +47,15 @@ kernel_main:
     cmp bl, 1                   ; if the row is 1 then don't delete any further
     je .next
     dec bl                      ; else: row -= 1
-    mov dl, 79                  ; column = 79 (actually column 80 bc 0-indexed)
+    mov dx, 79                  ; column = 79 (actually column 80 bc 0-indexed)
     ; test to see if the last character of the previous row is a space, if it isn't then delete and continue
     mov eax, COLUMNS      ; math for calculating video memory below
     mul bl
-    add al, dl
+    add ax, dx
     mov cx, 2
     mul cx
     add eax, VID_MEM
-    mov dl, 79            ; for some reason the dx register had been reset, so we just move it back to the end of the row
+    mov dx, 79            ; for some reason the dx register had been reset, so we just move it back to the end of the row
     cmp [eax], byte 0x20
     jne .column_0_next
     .find_space:          ; if it is a space then, find the next non-space character, move back one space and return
@@ -73,7 +73,15 @@ kernel_main:
     jmp .next
   .enter_key:
     mov dl, 0
+    call string_get_row
+    mov cl, 0x20
+    call string_strip
     inc bl
+    call graphics_print_string
+    inc bl
+    mov si, COMMAND_MSG
+    call graphics_print_string
+    mov dl, 1
     jmp .next
   .move_cursor:
   inc dl
@@ -92,9 +100,10 @@ WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
 navigation_msg db 'Nebula > Formation', 0
 COMMAND_MSG db '>', 0
 QUIT_MSG db 'HUNG STARTASTE', 0
+DEBUG_STRING db 'debug', 0
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
-%include "utils/keyboard_set2.asm"
+%include "utils/string.asm"
 
 times 1024-($-$$) db 0	; Padding for the rest of the kernel

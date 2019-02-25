@@ -8,9 +8,10 @@
 graphics_put_char:
   pusha
   ; calaculate the address of the character.
+  mov dh, 0           ; ax + dl might result in overflow so we set dh to 0
   mov eax, COLUMNS
   mul bl              ; row * columns
-  add al, dl          ; (row * columns) + colum
+  add ax, dx          ; (row * columns) + colum
   mov bx, 2
   mul bx              ; multiply everything by 2 because every character takes 2 bytes.
   add eax, VID_MEM
@@ -78,9 +79,10 @@ graphics_clear:
 graphics_print_string:
   pusha
   ; calaculate the address of the character.
+  mov dh, 0           ; ax + dl might result in overflow so we set dh to 0
   mov eax, COLUMNS
   mul bl              ; row * columns
-  add al, dl          ; (row * columns) + colum
+  add ax, dx          ; (row * columns) + colum
   mov bx, 2
   mul bx              ; multiply everything by 2 because every character takes 2 bytes.
   add eax, VID_MEM
@@ -108,9 +110,8 @@ graphics_print_string:
 ; ============================================ ;
 graphics_get_cursor:
   push ax
-  mov ax, [GRAPHICS_CURSOR_POSITION]
-  mov dl, al
-  mov bl, ah
+  mov bx, [GRAPHICS_CURSOR_ROW]
+  mov dx, [GRAPHICS_CURSOR_COLUMN]
 
   .done:
   pop ax
@@ -124,13 +125,13 @@ graphics_get_cursor:
 graphics_move_cursor:
   pusha
   ; set the cursor position variable
-  mov al, dl
-  mov ah, bl
-  mov [GRAPHICS_CURSOR_POSITION], ax   ; move the value of eax into the location at GRAPHICS_CURSOR_POSITION
+  mov [GRAPHICS_CURSOR_ROW], bl
+  mov [GRAPHICS_CURSOR_COLUMN], dl
   ; calaculate the address of the character.
+  mov dh, 0           ; ax + dl might result in overflow so we set dh to 0
   mov eax, COLUMNS
   mul bl              ; row * columns
-  add al, dl          ; (row * columns) + column
+  add ax, dx          ; (row * columns) + column
   mov ebx, eax        ; it must be stored in bx so we can access it later on
 
   .low_byte:
@@ -153,5 +154,30 @@ graphics_move_cursor:
   popa
   ret
 
+; ============================================ ;
+; Set Page Routine
+; Arguments: ax: Page
+; Outputs: None (changes display)
+; ============================================ ;
+graphics_set_page:
+  pusha
+
+  .done:
+    popa
+    ret
+
+; ============================================ ;
+; Get Page Routine
+; Arguments: None
+; Outputs: ax: Page
+; ============================================ ;
+graphics_get_page:
+  mov ax, [GRAPHICS_PAGE]
+
+  .done:
+    ret
+
 ; define cursor position variables
-GRAPHICS_CURSOR_POSITION dw 0x0000    ; 0x xx yy
+GRAPHICS_CURSOR_ROW db 0
+GRAPHICS_CURSOR_COLUMN db 0
+GRAPHICS_PAGE db 0

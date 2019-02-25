@@ -78,3 +78,5 @@ keyboard_ack:
   ret
 
 KEYBOARD_TYPE db 0    ; Not properly set until after a call to keyboard_init
+
+%include "utils/keyboard_sets.asm"
