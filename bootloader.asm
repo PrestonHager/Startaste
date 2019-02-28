@@ -12,6 +12,7 @@ bootloader:
     ; read the disk
     mov bx, KERNEL_OFFSET   ; set the offset.
     mov ax, 0x07C0
+    mov ds, ax
     mov es, ax
     mov dl, [BOOT_DRIVE]
     mov ah, 02h ; function: read sectors from drive
@@ -56,11 +57,11 @@ protected_mode:
   mov ax, 10h             ; Save data segment identifyer
   mov ds, ax              ; Move a valid data segment into the data segment register
   mov ss, ax              ; Move a valid data segment into the stack segment register
-  mov esp, 090000h        ; Move the stack pointer to 090000h
+  mov esp, 90000h         ; Move the stack pointer to 90000h
+
+  call enable_A20
 
   jmp 08h:kernel_start_offset
-
-  jmp $   ; should never get to here.
 
 ERROR_MSG db "Error in booting.", 0
 BOOT_DRIVE db 0
@@ -69,6 +70,7 @@ KERNEL_SIZE equ 0x2
 
 %include "utils/gdt.asm"
 %include "utils/print_string.asm"
+%include "utils/A20.asm"
 
 times 510-($-$$) db 0	; Padding for the rest of boot sector minus 2 special chars
 dw 0xAA55

@@ -39,13 +39,13 @@ string_get_row:
 string_strip:
   pusha
 
-  mov ax, 0       ; set the start length to 0
-  .length:
-    mov bl, [si]  ; get the character in si
-    inc ax        ; increase both ax and si by 1
-    inc si
-    cmp bl, 0     ; if it's the end then continue, otherwise repeat.
-    jne .length
+  ; mov bx, 0       ; set the start length to 0
+  ; .length:
+  ;   mov bl, [si]  ; get the character in si
+  ;   inc ax        ; increase both ax and si by 1
+  ;   inc si
+  ;   cmp bl, 0     ; if it's the end then continue, otherwise repeat.
+  ;   jne .length
 
   .done:
     popa
