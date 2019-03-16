@@ -101,9 +101,9 @@ keyboard_set2_input:
     jmp .done
 
   .done:
-  pop eax
-  pop ebx
   pop edx
+  pop ebx
+  pop eax
   ret
 
 L_SHIFT_PRESSED db 0x00

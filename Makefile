@@ -3,24 +3,30 @@ ASM=nasm
 # The default catanation command, (cat for most linux systems, type for windows).
 CAT=cat
 # The default compiler, (gcc for linux systems. not installed on windows.)
-# COMPILER=gcc
+C=gcc
 # The default linker, (ld for linux systems. not installed on windows.)
 # LINKER=ld
+# The default compiler's assembler (as for linux systems. not installed on windows.)
+ASM_C=as
 # Default file name in case it isn't passed in:
 bootloader=bootloader
 kernel=kernel
-filesystem=file_system_data
+kernel_entry=kernel_entry
 type=kernel
 qemu_args=
 
 ifeq ($(type), boot)
 	files = $(bootloader).o
-else ifeq ($(type), fs)
-	files = $(bootloader).o $(kernel).o $(filesystem).o
-else ifeq ($(type), filesystem)
-	files = $(bootloader).o $(kernel).o $(filesystem).o
+	c_files =
+else ifeq ($(type), c_kernel)
+	files = $(bootloader).o
+	c_files = $(kernel).o
+else ifeq ($(type), kernel_entry)
+	files = $(bootloader).o
+	c_files = $(kernel).o
 else
 	files = $(bootloader).o $(kernel).o
+	c_files =
 endif
 
 ifeq ($(platform), win)
@@ -33,9 +39,14 @@ run: os.img
 	@ echo "Running the emulator using compiled image."
 	@ qemu-system-i386 -readconfig emulator_config.txt $(qemu_args)
 
-os.img: $(files)
+os.img: $(files) $(c_files)
 	@ echo "Catanating files to make image."
-	@ $(CAT) $(files) > os.img
+	@ $(CAT) $(files) $(c_files) > os.img
+
+%.o: %.c
+	@ echo "Compiling $<."
+	@ $(C) -c -m32 -o $@ $<
+	@ rm tmp.s
 
 %.o: %.asm
 	@ echo "Assembling $<."
@@ -47,4 +58,4 @@ clean:
 
 clean-full:
 	@ echo "Cleaning all files."
-	@ rm *.o os.img
+	@ rm os.img *.o

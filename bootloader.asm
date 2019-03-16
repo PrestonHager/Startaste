@@ -66,7 +66,7 @@ protected_mode:
 ERROR_MSG db "Error in booting.", 0
 BOOT_DRIVE db 0
 KERNEL_OFFSET equ 0x200
-KERNEL_SIZE equ 0x2
+KERNEL_SIZE equ 0x3
 
 %include "utils/gdt.asm"
 %include "utils/print_string.asm"
