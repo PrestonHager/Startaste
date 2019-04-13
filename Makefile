@@ -14,18 +14,19 @@ kernel=kernel
 kernel_entry=kernel_entry
 type=kernel
 qemu_args=
+program_files=
 
 ifeq ($(type), boot)
-	files = $(bootloader).o
+	files = $(bootloader).bin
 	c_files =
 else ifeq ($(type), c_kernel)
-	files = $(bootloader).o
+	files = $(bootloader).bin
 	c_files = $(kernel).o
 else ifeq ($(type), kernel_entry)
-	files = $(bootloader).o
+	files = $(bootloader).bin
 	c_files = $(kernel).o
 else
-	files = $(bootloader).o $(kernel).o
+	files = $(bootloader).bin $(kernel).bin
 	c_files =
 endif
 
@@ -41,20 +42,20 @@ run: os.img
 
 os.img: $(files) $(c_files)
 	@ echo "Catanating files to make image."
-	@ $(CAT) $(files) $(c_files) > os.img
+	@ $(CAT) $(files) $(c_files) $(program_files) > os.img
 
 %.o: %.c
 	@ echo "Compiling $<."
 	@ $(C) -c -m32 -o $@ $<
 	@ rm tmp.s
 
-%.o: %.asm
+%.bin: %.asm
 	@ echo "Assembling $<."
 	@ $(ASM) -f bin -o $@ $<
 
 clean:
 	@ echo "Cleaning up the temporary files."
-	@ rm *.o
+	@ rm -f *.bin *.o
 
 clean-full:
 	@ echo "Cleaning all files."

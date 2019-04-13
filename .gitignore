@@ -7,5 +7,4 @@
 *.img
 
 # A few development files
-keyboard_set2_scancodes.csv
-keyboard_scancode_maker.py
+compiler/build/**

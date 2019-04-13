@@ -133,16 +133,7 @@ keyboard_update:
     call graphics_put_char
     jmp .next
   .enter_key:
-    mov dl, 0
-    call string_get_row
-    mov cl, 0x20
-    call string_strip
-    inc bl
-    call graphics_print_string
-    inc bl
-    mov si, COMMAND_MSG
-    call graphics_print_string
-    mov dl, 1
+    call interpreter_run
     jmp .next
 
   ; Otherwise if none of the test cases were met we jump here and move the cursor variables

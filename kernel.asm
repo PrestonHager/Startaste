@@ -29,16 +29,31 @@ kernel_main:
   call keyboard_update
   jmp .update
 
+kernel_quit:
+  mov ch, 0x0F
+  mov cl, 0x0F
+  mov si, NULL_MSG
+  call graphics_clear
+  mov bl, 0
+  mov dl, 0
+  mov si, QUIT_MSG
+  call graphics_print_string
+  hlt
+  jmp $
+
 SECTION .data
 WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
 navigation_msg db 'Nebula > Formation', 0
 COMMAND_MSG db '>', 0
-QUIT_MSG db 'HUNG STARTASTE', 0
-DEBUG_STRING db 'debug', 0
+QUIT_MSG db 'EXIT SUCCESSFUL. YOU MAY NOW TURN OFF THE COMPTER.', 0
+DEBUG_STRING db 'DEBUG', 0
+NULL_MSG db 0
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
 %include "utils/string.asm"
-%include "utils/handler.asm"
+%include "utils/interpreter.asm"
 
-times 1536-($-$$) db 0	; Padding for the rest of the kernel
+times 1536-($-$$)-5 db 0	; Padding for the rest of the kernel
+jmp kernel_main.update
+kernel_end:
