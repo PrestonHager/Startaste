@@ -26,6 +26,21 @@ kernel_main:
   call graphics_move_cursor
 
 .update:
+  ; Testing for the ran program:
+  cmp al, 0x02                ; testing for the return code of 2
+  jne .not_ran
+  mov al, 0                   ; reset the return code
+  call graphics_get_cursor    ; get the cursor to manipulate the display
+  cmp dl, 1                   ; if the cursor is already at column 1 then the program probably already printed the command msg.
+  je .not_ran
+  inc bl                      ; increment the row
+  mov dl, 0                   ; and move to the beginning of it
+  call graphics_move_cursor
+  mov si, COMMAND_MSG         ; so we can print the command msg
+  call graphics_print_string
+  mov dl, 1                   ; then move the cursor to column 1
+  call graphics_move_cursor
+  .not_ran:                   ; where to jump if the return code isn't 2
   call keyboard_update
   jmp .update
 
@@ -54,6 +69,7 @@ NULL_MSG db 0
 %include "utils/string.asm"
 %include "utils/interpreter.asm"
 
-times 1536-($-$$)-5 db 0	; Padding for the rest of the kernel
+times 1536-($-$$)-6 db 0	; Padding for the rest of the kernel
+pop eax
 jmp kernel_main.update
 kernel_end:

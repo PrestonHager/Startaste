@@ -16,15 +16,17 @@ interpreter_run:
   call string_lowercase
 
   .parse:
-    .debug_command:
-      mov di, interrupter_COMMANDS_debug_command
+    .run_command:
+      mov di, interrupter_COMMANDS_run_command
       call string_compare
       cmp ax, 1
       jne .help_command
-      mov si, interrupter_MSGS_debug
-      mov eax, 2
+      ; this is almost like a custom-.done label
+      pop ecx
+      mov eax, 0x00000002
+      mov ah, bl
+      push eax
       jmp 08h:kernel_end
-      jmp .display
     .help_command:
       mov di, interrupter_COMMANDS_help_command
       call string_compare
@@ -56,6 +58,7 @@ interpreter_run:
 
 interrupter_COMMANDS_help_command db 'help', 0
 interrupter_COMMANDS_quit_command db 'quit', 0
+interrupter_COMMANDS_run_command db 'run', 0
 interrupter_COMMANDS_debug_command db 'debug', 0
 interrupter_MSGS_help db 'HELP: shows this help message. QUIT: hangs kernel.', 0
 interrupter_MSGS_debug db 'DEBUG', 0
