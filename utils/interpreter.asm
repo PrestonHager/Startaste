@@ -26,6 +26,10 @@ interpreter_run:
       mov eax, 0x00000002
       mov ah, bl
       push eax
+      ; then move the cursor to the next row
+      inc bl
+      mov dl, 0
+      call graphics_move_cursor
       jmp 08h:kernel_end
     .help_command:
       mov di, interrupter_COMMANDS_help_command

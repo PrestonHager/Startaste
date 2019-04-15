@@ -1,0 +1,4 @@
+include>io;
+
+// print a simple message.
+print>"Testing...", "Startaste is amazing!";
