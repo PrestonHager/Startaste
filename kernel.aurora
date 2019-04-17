@@ -1,0 +1,14 @@
+// Starting Kernel for Startaste (with Aurora)
+
+_asm>"[ORG 0x7E00]";
+
+include>"graphics";
+
+// Initialize the graphics.
+graphics_clear>0x38, 0x90, "Nebula > Formation";
+graphics_print>">", 1, 0;
+graphics_move_cursor>1, 1;
+
+// This is our update loop for now.
+// TODO: add an update loop using ReactiveX.
+_asm>"hlt";
