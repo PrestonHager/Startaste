@@ -2,7 +2,7 @@
 
 _asm>"[ORG 0x7E00]";
 
-include>"agraphics";
+include>"utils/agraphics";
 
 // Initialize the graphics.
 graphics_clear>0x38, 0x90, "Nebula > Formation";

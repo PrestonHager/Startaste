@@ -45,7 +45,7 @@ func graphics_move_cursor>row::Number, col::Number;
 end;
 
 func graphics_get_cursor> => Number{2};
-  return>{CURSOR_ROW, CURSOR_COLUMN};
+  return {CURSOR_ROW, CURSOR_COLUMN};
 end;
 
 Number: CURSOR_ROW = 0;
