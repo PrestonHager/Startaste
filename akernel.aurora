@@ -2,12 +2,17 @@
 
 _asm>"[ORG 0x7E00]";
 
-include>"utils/agraphics";
+// include>"utils/agraphics";
+include>string;
 
 // Initialize the graphics.
-graphics_clear>0x38, 0x90, "Nebula > Formation";
-graphics_print>">", 1, 0;
-graphics_move_cursor>1, 1;
+// graphics_clear>0x38, 0x90, "Nebula > Formation";
+// graphics_print>">", 1, 0;
+// graphics_move_cursor>1, 1;
+
+Number: video_memeory = 0xb8000;
+[video_memeory] = byte ascii>"J";
+
 
 // This is our update loop for now.
 // TODO: add an update loop using ReactiveX.
