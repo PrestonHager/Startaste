@@ -7,6 +7,4 @@
 *.img
 
 # A few development files
-compiler/build/**
-build/**
-utils/build/**
+aurora/*
