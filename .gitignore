@@ -5,6 +5,4 @@
 *.zip
 *.tmp
 *.img
-
-# A few development files
 aurora/*
