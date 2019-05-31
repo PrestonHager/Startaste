@@ -12,8 +12,10 @@ include>string;
 
 Number: video_memeory = 0xb8000;
 [video_memeory] = byte ascii>"J";
-for>Number: i=0, i?<80, i++;
-  [video_memeory] = byte ascii>"A";
+for>Number: i=0, i?<80, i++; then;
+  [video_memeory] = byte ascii>"Z";
+  video_memeory += 2;
+end;
 
 // This is our update loop for now.
 // TODO: add an update loop using ReactiveX.

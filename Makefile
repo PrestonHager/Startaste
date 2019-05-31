@@ -18,16 +18,13 @@ program_files=
 
 ifeq ($(type), boot)
 	files = $(bootloader).bin
-	c_files =
-else ifeq ($(type), c_kernel)
-	files = $(bootloader).bin
-	c_files = $(kernel).o
-else ifeq ($(type), kernel_entry)
-	files = $(bootloader).bin
-	c_files = $(kernel).o
+	aurora_files =
+else ifeq ($(type), aurora)
+	files = $(bootloader).bin $(kernel).bin
+	aurora_files = $(kernel).aurora
 else
 	files = $(bootloader).bin $(kernel).bin
-	c_files =
+	aurora_files =
 endif
 
 ifeq ($(platform), win)
@@ -42,21 +39,16 @@ run: os.img
 
 os.img: $(files) $(c_files)
 	@ echo "Catanating files to make image."
-	@ $(CAT) $(files) $(c_files) $(program_files) > os.img
-
-%.o: %.c
-	@ echo "Compiling $<."
-	@ $(C) -c -m32 -o $@ $<
-	@ rm tmp.s
+	@ $(CAT) $(files) > os.img
 
 %.bin: %.asm
 	@ echo "Assembling $<."
 	@ $(ASM) -f bin -o $@ $<
 
+%.bin: %.aurora
+	@ echo "Compiling Aurora file $<."
+	@ aurora $< -o $@ -fs
+
 clean:
 	@ echo "Cleaning up the temporary files."
-	@ rm -f *.bin *.o
-
-clean-full:
-	@ echo "Cleaning all files."
-	@ rm os.img *.o
+	@ rm -f *.bin os.img *.o
