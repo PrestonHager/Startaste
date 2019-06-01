@@ -1,4 +1,5 @@
 include>string;
+include>io;
 
 func graphics_put_char>row::Number, col::Number, char::String, color::Number;
   Number: video_pointer = 0xb8000 + (row * 80 + col) * 2;

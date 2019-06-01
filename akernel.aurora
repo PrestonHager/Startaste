@@ -11,9 +11,10 @@ include>string;
 // graphics_move_cursor>1, 1;
 
 Number: video_memeory = 0xb8000;
-[video_memeory] = byte ascii>"J";
-for>Number: i=0, i?<80, i++; then;
-  [video_memeory] = byte ascii>"Z";
+String: msg = "Hello World!";
+Number: msg_len = len>msg;
+for>Number: i=0, i?<msg_len, i++; then;
+  [video_memeory] = byte ascii>"A";
   video_memeory += 2;
 end;
 
