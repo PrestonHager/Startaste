@@ -13,7 +13,7 @@ include>string;
 Number: video_memeory = 0xb8000;
 String: msg = "Hello World!";
 Number: msg_len = len>msg;
-for>Number: i=0, i?<msg_len, i++; then;
+for>Number: i = 0, i ?< msg_len, i++; then;
   [video_memeory] = byte ascii>"A";
   video_memeory += 2;
 end;
