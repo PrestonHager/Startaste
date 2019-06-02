@@ -49,7 +49,7 @@ func graphics_move_cursor>row::Number, col::Number;
   // io_out>0x03D5, loaction{9:16};
 end;
 
-func graphics_get_cursor> => Number{2};
+func graphics_get_cursor>< => Number{2};
   return {CURSOR_ROW, CURSOR_COLUMN};
 end;
 
