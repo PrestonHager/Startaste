@@ -1,6 +1,8 @@
+# Default platform, change this to `win` for switching to some windows variables
+platform=linux
 # The Assembler (default=nasm):
 ASM=nasm
-# The default catanation command, (cat for most linux systems, type for windows).
+# The default catanation command, (cat for most linux systems, not installed for windows).
 CAT=cat
 # The default compiler, (gcc for linux systems. not installed on windows.)
 C=gcc
@@ -11,6 +13,7 @@ OBJCOPY=objcopy
 # Default file name in case it isn't passed in:
 bootloader=bootloader
 kernel=kernel
+kernel_entry=kernel_entry
 type=kernel
 libraries=libs/graphics.o
 qemu_args=
@@ -19,21 +22,27 @@ ifeq ($(type), boot)
 	files = $(bootloader).bin
 else ifeq ($(type), aurora)
 	files = $(bootloader).bin $(kernel).bin
+	ifeq ($(kernel), kernel)
+		kernel=akernel
+	endif
 else ifeq ($(type), c)
 	files = $(bootloader).bin $(kernel).bin
+	ifeq ($(kernel), kernel)
+		kernel=ckernel
+	endif
 else
 	files = $(bootloader).bin $(kernel).bin
 endif
 
 ifeq ($(platform), win)
-	CAT = type
+	kernel_entry=kernel_entry_win
 endif
 
 all: run clean
 
 run: os.img
 	@ echo "Running the emulator using compiled image."
-	@ qemu-system-i386 -readconfig emulator_config.txt -curses $(qemu_args)
+	@ qemu-system-i386 -readconfig emulator_config.txt $(qemu_args)
 
 os.img: $(files)
 	@ echo "Catanating files to make OS image."
@@ -43,11 +52,11 @@ os.img: $(files)
 	@ echo "Assembling $<."
 	@ $(ASM) -f bin -o $@ $<
 
-%.bin: %.c kernel_entry.o $(libraries)
+%.bin: %.c $(kernel_entry).o $(libraries)
 	@ echo "Compiling $<."
 	@ $(C) -fno-pie -ffreestanding -m32 -c $< -o file.o
 	@ echo "Linking and turing in to bytecode."
-	@ $(LINKER) -o file.tmp -Ttext 0x7E00 -m i386pe kernel_entry.o file.o
+	@ $(LINKER) -o file.tmp -Ttext 0x7E00 -m i386pe $(kernel_entry).o file.o
 	@ $(OBJCOPY) -O binary -j .text file.tmp $@
 
 %.o: %.c
