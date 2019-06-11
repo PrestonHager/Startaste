@@ -12,7 +12,7 @@ OBJCOPY=objcopy
 bootloader=bootloader
 kernel=kernel
 type=kernel
-libraries=graphics.o
+libraries=libs/graphics.o
 qemu_args=
 
 ifeq ($(type), boot)

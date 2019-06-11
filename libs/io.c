@@ -2,6 +2,8 @@
 // by Preston Hager
 // for Startaste OS
 
+#include "io.h"
+
 /* in
  - using the IO ports, we can get a value. */
 char in(unsigned short port) {

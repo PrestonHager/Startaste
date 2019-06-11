@@ -2,7 +2,7 @@
 // by Preston Hager
 // for Startaste OS
 
-#include "graphics.c"
+#include "libs/graphics.c"
 
 void kernel_start() {
   char navigation_message[80] = "Nebula > Formation";
