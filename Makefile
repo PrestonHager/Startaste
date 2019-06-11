@@ -33,7 +33,7 @@ all: run clean
 
 run: os.img
 	@ echo "Running the emulator using compiled image."
-	@ qemu-system-i386 -readconfig emulator_config.txt $(qemu_args)
+	@ qemu-system-i386 -readconfig emulator_config.txt -curses $(qemu_args)
 
 os.img: $(files)
 	@ echo "Catanating files to make OS image."
@@ -45,14 +45,14 @@ os.img: $(files)
 
 %.bin: %.c kernel_entry.o $(libraries)
 	@ echo "Compiling $<."
-	@ $(C) -ffreestanding -m32 -c $< -o file.o
+	@ $(C) -fno-pie -ffreestanding -m32 -c $< -o file.o
 	@ echo "Linking and turing in to bytecode."
 	@ $(LINKER) -o file.tmp -Ttext 0x7E00 -m i386pe kernel_entry.o file.o
 	@ $(OBJCOPY) -O binary -j .text file.tmp $@
 
 %.o: %.c
 	@ echo "Compiling $<."
-	@ $(C) -ffreestanding -m32 -c $< -o $@
+	@ $(C) -fno-pie -ffreestanding -m32 -c $< -o $@
 
 %.o: %.asm
 	@ echo "Assembling $<."
