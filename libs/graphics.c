@@ -53,6 +53,13 @@ void graphics_print(unsigned char msg[], unsigned char x, unsigned char y) {
   }
 }
 
+/* graphics_put_char
+ - puts a character at the location x, y on screen. */
+void graphics_put_char(unsigned char c, unsigned char x, unsigned char y) {
+  unsigned char *video_memory = (unsigned char*) VIDEO_MEMORY_ADDRESS + (ROWS*COLUMNS*y + COLUMNS*x)*2;
+  *video_memory = c;
+}
+
 /* graphics_move_cursor
  - moves the cursor to a specified location (col, row). */
 void graphics_move_cursor(unsigned char x, unsigned char y) {

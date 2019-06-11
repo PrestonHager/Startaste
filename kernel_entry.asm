@@ -1,4 +1,4 @@
 [BITS 32]
-[extern _kernel_start]
-call _kernel_start
+[extern kernel_start]
+call kernel_start
 hlt
