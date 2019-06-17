@@ -64,7 +64,7 @@ void graphics_put_char(unsigned char c, unsigned char x, unsigned char y) {
  - moves the cursor to a specified location (col, row). */
 void graphics_move_cursor(unsigned char x, unsigned char y) {
   // the cursor position is calculated.
-  unsigned short cursor_position = (ROWS*COLUMNS*y + COLUMNS*x);
+  unsigned short cursor_position = (COLUMNS*y + x);
   // set the low byte.
   out(0x03D4, 0x0f);
   out(0x03D5, cursor_position & 0xFF);
