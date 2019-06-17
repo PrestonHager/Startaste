@@ -2,6 +2,13 @@
 // by Preston Hager
 // for Startaste OS
 
+/** Bool Structure
+ * Holds one bit that is either 1 or 0, true or false.
+ */
+typedef struct bool_t {
+  char v:1;
+} bool;
+
 /** Element Data Structure.
  * Holds 16 bytes of data in a special format.
  */
@@ -34,10 +41,12 @@ typedef struct planet_t {
  */
 typedef struct star_t {
   short id;
-  Element elements[128];
+  Element *elements[128];
+  char element_index;
   // TODO: make planets dynamicaly allocate instead of having a limit.
   Planet *planets[4];
-  char element_index;
+  char total_planets;
   void (*update)();
   void (*orbit)();
+  void (*add_element)();
 } Star;

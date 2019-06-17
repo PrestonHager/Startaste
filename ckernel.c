@@ -6,6 +6,7 @@
 #include "libs/ckernel.h"
 #include "libs/graphics.c"
 #include "libs/stars.c"
+#include "libs/keyboard.c"
 
 // The list of registered stars, the number is the maximum number of stars that can be registered at once.
 Star *KERNEL_STARS[64];
@@ -26,6 +27,7 @@ void kernel_start() {
   // These are Observables from ReactiveX programming.
   // We call Observalbes Stars and the Subscribed Observers are called Orbitting Planets.
   star_start();
+  planet_start();
   while (1) {
     // Run through the updates of each star.
     // Note that the star must be registered with the kernel before it can be updated.
@@ -46,15 +48,14 @@ void graphics_start() {
   graphics_move_cursor(1, 1);
 }
 
-void keyboard_update(Star *self) {
-  // TODO: finish keyboard update function.
-  // See if there's input from the keyboard.
-  // If there is, then get it.
-  // Now put that character into the keyboard_star.
-}
-
 void star_start() {
   // One of the biggest stars is the keyboard input.
   Star *keyboard_star = new_star(0x0001, &keyboard_update);
   kernel_star_register(keyboard_star);
+}
+
+void planet_start() {
+  // The keys we press have to go somewhere.
+  // So we create a simple terminal.
+  // TODO: create terminal to display keyboard input.
 }
