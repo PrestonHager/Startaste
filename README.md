@@ -8,7 +8,7 @@ To install Startaste download the source package via git or zip. `git clone http
 
 If you're wanting to run a different bootloader simply add the variable, `bootloader` in the command line; as such, `make bootloader=[filename]`.
 
-By default the makefile will build the 32-bit protected mode OS. If you would like the 16-bit real mode OS, use the folder `16bit\` in front of any files.
+By default the makefile will build the assembly kernel. To build a different type of kernel use the `type` argument. For example `type=c` will change most if not all the files to build the c kernel rather than the assembly kernel.
 
 You will also need to install [QEMU](https://qemu.org), I'm working on making the entire package independent to compile and emulate, but until then you must install QEMU first.
 
@@ -16,6 +16,7 @@ You will also need to install [QEMU](https://qemu.org), I'm working on making th
 
 ## Differences on Windows
 If you haven't installed GNU Cat on your windows computer, use `make platform=win` when making. This will instead have make use the `type` command, which is the windows equivalent of cat.
+If you're building the C kernel on windows you will need to use this as well because the MinGW gcc has a little different entry in assembly.
 
 -----
 

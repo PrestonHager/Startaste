@@ -74,3 +74,4 @@ os.img: $(files)
 clean:
 	@ echo "Cleaning up the temporary files."
 	@ rm -f *.bin *.o *.tmp
+	@ cd libs && rm -f *.o
