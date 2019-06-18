@@ -89,7 +89,7 @@ keyboard_update:
   call keyboard_input
   cmp cl, 0
   je .key_not_found
-  mov ch, 0x90
+  mov ch, 0xE0
   call graphics_get_cursor
   cmp cl, 0x08
   je .backspace
@@ -129,7 +129,7 @@ keyboard_update:
     inc dl
     jmp .next
     .column_0_next:
-    mov cx, 0x9020        ; cl=0x20, ch=0x90
+    mov cx, 0xE020        ; cl=0x20, ch=0xE0
     call graphics_put_char
     jmp .next
   .enter_key:

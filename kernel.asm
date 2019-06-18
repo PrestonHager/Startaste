@@ -11,16 +11,16 @@ kernel_main:
   ; initialize the keyboard (basically what scancode set are we using)
   call keyboard_init
   ; start the graphics.
-  mov ch, 0x38
-  mov cl, 0x90
+  mov ch, 0xD8
+  mov cl, 0xE0
   mov si, navigation_msg
   call graphics_clear
-  mov ch, 0x90
+  mov ch, 0xE0
   mov bl, 1
   mov dl, 0
   mov si, COMMAND_MSG
   call graphics_print_string
-  mov ch, 0x90
+  mov ch, 0xE0
   mov bl, 1
   mov dl, 1
   call graphics_move_cursor
