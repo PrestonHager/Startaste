@@ -1,217 +1,183 @@
-; Graphics routines
+; Graphics routines for Protected Mode
 
 ; ============================================ ;
-; Move Cursor Routine
-; Arguments: dh: Row, dl: Column
-; Ouputs: None
+; Put Character Routine
+; Arguments: bl: Row, dl: Column, cx: Character and Color
+; Outputs: None (changes display)
 ; ============================================ ;
-graphics_move_cursor:   ; Move cursor routine
-  pusha       ; Push registers to stack
+graphics_put_char:
+  pusha
+  ; calaculate the address of the character.
+  mov dh, 0           ; ax + dl might result in overflow so we set dh to 0
+  mov eax, COLUMNS
+  mul bl              ; row * columns
+  add ax, dx          ; (row * columns) + colum
+  mov bx, 2
+  mul bx              ; multiply everything by 2 because every character takes 2 bytes.
+  add eax, VID_MEM
 
-  mov bh, 0   ; Page argument
-  mov ah, 2   ; Function code
-  int 10h		; Call video screen draw interrupt
+  .draw:
+  mov [eax], cx
 
+  .done:
+  popa
+  ret
+
+; ============================================ ;
+; Clear Screen Routine
+; Arguments: cl: Main Color, ch: Top Color, si: Top Message
+; Outputs: None (changes display)
+; ============================================ ;
+graphics_clear:
+  pusha
+  mov eax, VID_MEM        ; must use 32-bit register for addressing otherwise it thinks it's a different location.
+  mov dx, 0
+  mov bl, ' '             ; set the background character color and character.
+  mov bh, cl
+
+  .top_msg:
+    mov cl, [si]          ; get the first character of the Top Message
+    cmp cl, 0             ; make sure it's not a null character (strings are null-terminated)
+    je .top_msg_finish
+    mov [eax], cx         ; if it isn't then we can put it into video memory
+    add eax, 2            ; increase the pointer to video memory by 2 bytes (one for character, one for color)
+    inc si                ; and increment the counter and string pointer by 1
+    inc dx
+    cmp dx, COLUMNS       ; if the counter has reached the end of the row, then we don't need to print the rest of the message.
+    jne .top_msg
+    jmp .repeat
+  .top_msg_finish:
+    mov cl, ' '           ; put the character that we are printing, a space, into lower bytes of cx
+  .top_msg_finish_:
+    mov [eax], cx         ; put a space at the video memory
+    add eax, 2            ; add 2 to the video memeory pointer again, and increment the counter
+    inc dx
+    cmp dx, COLUMNS       ; if the counter has reached the end of a row then we can stop.
+    jne .top_msg_finish_
+
+  .repeat:
+    mov [eax], bx
+    add eax, 2
+    inc dx
+    cmp dx, ROWS*COLUMNS
+    jne .repeat
+
+  .move_cursor:
+  mov bl, 0
+  mov dl, 0
+  call graphics_move_cursor
+
+  .done:
+  popa
+  ret
+
+; ============================================ ;
+; Print String Routine
+; Arguments: si: String (null-term), bl: Row, dl: Column, ch: Color
+; Outputs: None (changes display)
+; ============================================ ;
+graphics_print_string:
+  pusha
+  ; calaculate the address of the character.
+  mov dh, 0           ; ax + dl might result in overflow so we set dh to 0
+  mov eax, COLUMNS
+  mul bl              ; row * columns
+  add ax, dx          ; (row * columns) + colum
+  mov bx, 2
+  mul bx              ; multiply everything by 2 because every character takes 2 bytes.
+  add eax, VID_MEM
+
+  mov edx, eax
+  mov ah, ch
+
+  .repeat:
+    lodsb
+    cmp al, 0
+    je .done
+    ; the character and character is now in cx and ready to be printed.
+    mov [edx], ax
+    add edx, 2
+    jmp .repeat
+
+  .done:
   popa
   ret
 
 ; ============================================ ;
 ; Get Cursor Routine
 ; Arguments: None
-; Outputs: dh: Row, dl: Column
+; Outputs: bl: Row, dl: Column
 ; ============================================ ;
-graphics_get_cursor:   ; Move cursor routine
-  mov bh, 0   ; Page argument
-  mov ah, 3   ; Function code
-  int 10h		; Call video screen draw interrupt
+graphics_get_cursor:
+  push ax
+  mov bx, [GRAPHICS_CURSOR_ROW]
+  mov dx, [GRAPHICS_CURSOR_COLUMN]
 
+  .done:
+  pop ax
   ret
 
 ; ============================================ ;
-; Hide Cursor Routine
-; Arguments: None
-; Outputs: None
+; Move Cursor Routine
+; Arguments: bl: Row, dl: Column
+; Outputs: None (changes display)
 ; ============================================ ;
-graphics_hide_cursor:   ; Hide cursor routine
+graphics_move_cursor:
   pusha
-  call graphics_get_cursor    ; Set the start scan line and end scan line by getting the cursor
-  mov cx, 2607h   ; Default cursor option with last bit set to non-zero
-  mov ah, 1       ; Function code
-  int 10h         ; Call video screen draw interrupt
+  ; set the cursor position variable
+  mov [GRAPHICS_CURSOR_ROW], bl
+  mov [GRAPHICS_CURSOR_COLUMN], dl
+  ; calaculate the address of the character.
+  mov dh, 0           ; ax + dl might result in overflow so we set dh to 0
+  mov eax, COLUMNS
+  mul bl              ; row * columns
+  add ax, dx          ; (row * columns) + column
+  mov ebx, eax        ; it must be stored in bx so we can access it later on
+
+  .low_byte:
+  mov al, 0x0f
+  mov dx, 0x03D4
+  out dx, al
+  mov al, bl
+  mov dx, 0x03D5
+  out dx, al
+
+  .high_byte:
+  mov al, 0x0e
+  mov dx, 0x03D4
+  out dx, al
+  mov al, bh
+  mov dx, 0x03D5
+  out dx, al
+
+  .done:
   popa
   ret
 
 ; ============================================ ;
-; Show Cursor Routine
-; Arguments: None
-; Outputs: None
+; Set Page Routine
+; Arguments: ax: Page
+; Outputs: None (changes display)
 ; ============================================ ;
-graphics_show_cursor:   ; Hide cursor routine
+graphics_set_page:
   pusha
-  call graphics_get_cursor    ; Set the start scan line and end scan line by getting the cursor
-  mov cx, 0607h   ; Default cursor option with last bit set to zero
-  mov ah, 1       ; Function code
-  int 10h         ; Call video screen draw interrupt
-  popa
-  ret
-
-; ============================================ ;
-; Get Character Routine
-; Arguments: None
-; Outputs: dh: Color, dl: Character
-; ============================================ ;
-graphics_get_character: ; Get character routine
-  mov bh, 0   ; Page argument
-  mov ah, 8   ; Function code
-  int 10h     ; Call video screen draw interrupt
-
-  ret
-
-; ============================================ ;
-; Get Line Routine
-; Arguments: dh: Line
-; Outputs: si: Line ASCII
-; ============================================ ;
-graphics_get_line:
-  pusha
-  pop si      ; pop si so we can write to it
-  call graphics_get_cursor
-  mov [graphics_get_line_row_save], dh      ; dh: row; dl: column
-  mov [graphics_get_line_column_save], dl   ; get the current cursor and save it in memory in graphics_get_line_row_save and graphics_get_line_column_save
-  mov si, WORD 0
-  mov dl, 0   ; set the column of the cursor to 0 and move it, this will set it at the begining of the selected line.
-  call graphics_move_cursor
-
-  .repeat:
-    call graphics_get_character
-    mov [si], dl               ; get the character and move it into the si register
-    inc si      ; increment offset by 1
-    call graphics_get_cursor
-    cmp dl, 80
-    je .done      ; compare column to last column and if last then finish.
-    inc dl                      ; get the cursor again and move it one column to the right
-    call graphics_move_cursor
-    jmp .repeat
 
   .done:
-    mov dh, [graphics_get_line_row_save]
-    mov dl, [graphics_get_line_column_save]   ; move memory values for saved row and column into dh/dl for moving cursor back to original position
-    call graphics_move_cursor
-    push si     ; make sure si is preserved
-    popa
-
-; ============================================ ;
-; Print String Routine
-; Arguments: si: Message Location (zero-terminated string)
-; Outputs: None
-; ============================================ ;
-graphics_print_string:
-	pusha
-
-	mov ah, 0Eh    ; Function code
-
-  .repeat:
-  	lodsb				; Get char from string
-  	cmp al, 0
-  	je .done			; If char is zero, finish
-  	int 10h				; Else, call 10h interrupt
-  	jmp .repeat			; And then loop
-
-  .done: ; finish function
-  	popa
-  	ret
-
-; ============================================ ;
-; Move Cursor to End of Line Routine
-; Arguments: dh: Line
-; Outputs: None
-; ============================================ ;
-graphics_move_end_line:
-  pusha
-
-  call graphics_hide_cursor
-  call graphics_get_cursor
-  mov dl, 80                      ; Set column to end of row
-  call graphics_move_cursor
-  .loop_find_character:           ; Find the last character of that row and set cursor there
-    cmp dl, 0                   ; If in first column of row then row is empty and jump to finish
-    je .done
-    dec dl                      ; Otherwise continue... Go back one column
-    call graphics_move_cursor
-    call graphics_get_character
-    cmp al, 32                  ; Test to see if character is space
-    je .loop_find_character
-  inc dl                          ; If there is a character increment column one and continue
-  .done:
-    call graphics_move_cursor
-    call graphics_show_cursor
     popa
     ret
 
 ; ============================================ ;
-; Draw Background Routine
-; Arguments: ax: Top Text, bx: Bottom Text, cx: Color
-; Outputs: None
+; Get Page Routine
+; Arguments: None
+; Outputs: ax: Page
 ; ============================================ ;
-graphics_background:     ; Draw background routine
-  pusha
-  push ax				; Store params to pop out later
-  push bx
-  push cx
+graphics_get_page:
+  mov ax, [GRAPHICS_PAGE]
 
-  mov dl, 0
-  mov dh, 0
-  call graphics_move_cursor
+  .done:
+    ret
 
-  mov ah, 09h			; Draw white bar at top
-  mov bh, 0
-  mov cx, 80
-  mov bl, 0x90
-  mov al, ' '
-  int 10h
-
-  mov dl, 0
-  mov dh, 1
-  call graphics_move_cursor
-
-  mov ah, 09h			; Draw color section
-  mov cx, 1840
-  pop bx				; Get color param (originally in CX)
-  mov bh, 0
-  mov al, ' '
-  int 10h
-
-  mov dh, 24
-  mov dl, 0
-  call graphics_move_cursor
-
-  mov ah, 09h			; Draw white bar at bottom
-  mov bh, 0
-  mov cx, 80
-  mov bl, 0x90
-  mov al, ' '
-  int 10h
-
-  mov dh, 24
-  mov dl, 1
-  call graphics_move_cursor
-  pop bx				; Get bottom string param
-  mov si, bx
-  call graphics_print_string
-
-  mov dh, 0
-  mov dl, 1
-  call graphics_move_cursor
-  pop ax				; Get top string param
-  mov si, ax
-  call graphics_print_string
-
-  mov dh, 1			; Ready for app text
-  mov dl, 0
-  call graphics_move_cursor
-
-  popa
-  ret
-
-graphics_get_line_row_save db 0
-graphics_get_line_column_save db 0
+; define cursor position variables
+GRAPHICS_CURSOR_ROW db 0
+GRAPHICS_CURSOR_COLUMN db 0
+GRAPHICS_PAGE db 0

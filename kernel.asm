@@ -1,54 +1,75 @@
 ; kernel for Startaste OS.
+[BITS 32]
+[ORG 0x7E00]
 
-[org 0x7E00]
-BITS 16
+%define ROWS 25
+%define COLUMNS 80
+%define VID_MEM 0xb8000
 
-kernel_start:
-  ; setup stack.
-  ; the stack segment register (ss) is right after the kernel. so the current address + 1024. and because of 16bit memory addresses we divide it by 16.
-  ; the stack pointer register (sp) is the bottom of the stack (or the offset) so it's at 0.
-  mov ax, 0x0800	; the ax is a 16bit memory address (adrs*16+offset). this is the bootloader's address + it's length (512 bytes)
-  add ax, 1024
-  cli				; Disable interrupts while changing stack
-  mov ss, ax  ; move stack segment to ax address.
-  mov sp, 0x3000  ; stack pointer is offset, this is size of stack (16^3 * 3 = 12 kilobyte stack).
-  sti				; Restore interrupts
+SECTION .text
+kernel_main:
+  ; initialize the keyboard (basically what scancode set are we using)
+  call keyboard_init
+  ; start the graphics.
+  mov ch, 0xD8
+  mov cl, 0xE0
+  mov si, navigation_msg
+  call graphics_clear
+  mov ch, 0xE0
+  mov bl, 1
+  mov dl, 0
+  mov si, COMMAND_MSG
+  call graphics_print_string
+  mov ch, 0xE0
+  mov bl, 1
+  mov dl, 1
+  call graphics_move_cursor
 
-  ; Set data segment to the begining of the kernel (to encapsul all the data).
-  mov ax, 0x0  ; ax = bootlaoder location 16bit memory address (loc/16).
-  mov ds, ax ; set ds to location.
+.update:
+  ; Testing for the ran program:
+  cmp al, 0x02                ; testing for the return code of 2
+  jne .not_ran
+  mov al, 0                   ; reset the return code
+  call graphics_get_cursor    ; get the cursor to manipulate the display
+  cmp dl, 1                   ; if the cursor is already at column 1 then the program probably already printed the command msg.
+  je .not_ran
+  inc bl                      ; increment the row
+  mov dl, 0                   ; and move to the beginning of it
+  call graphics_move_cursor
+  mov si, COMMAND_MSG         ; so we can print the command msg
+  call graphics_print_string
+  mov dl, 1                   ; then move the cursor to column 1
+  call graphics_move_cursor
+  .not_ran:                   ; where to jump if the return code isn't 2
+  call keyboard_update
+  jmp .update
 
-  ; set up default values.
-  mov [newlineTyped], BYTE 0
+kernel_quit:
+  mov ch, 0x0F
+  mov cl, 0x0F
+  mov si, NULL_MSG
+  call graphics_clear
+  mov bl, 0
+  mov dl, 0
+  mov si, QUIT_MSG
+  call graphics_print_string
+  hlt
+  jmp $
 
-  ; now run the graphics.
-  mov ax, WELCOME_MSG		; Top bar message
-  mov bx, navigation_msg	; Bottom bar message (blank/empty)
-  mov cx, 0x38			; Main background color and char color
-  call graphics_background	; Call draw background routine
-
-kernel_update:
-	call keyboard_input
-  mov ax, [newlineTyped]
-	cmp ax, 0            ; compare the newlineTyped varaible to 0, if true then it's not a newline.
-	je .done_not_newline
-	; Is a newline and a command has been sent.
-  ; call graphics_get_cursor    ; get the cursor to find the row to read.
-  ; dec dh                      ; decrement dh by 1 to get previous row.
-  ; call graphics_get_line      ; get the previous line.
-	; call graphics_print_string  ; graphics_get_line returns the string in si, exactly where graphics_print_string get it's input from.
-  ; Reset the variable.
-  mov ax, 0
-  mov [newlineTyped], ax
-  .done_not_newline:
-  jmp kernel_update		; run update loop
-
-  WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
-  DEBUG_MSG db 'debugMsg.', 0
-  navigation_msg db 'Nebula > Formation', 0
-  BLANK_MSG db '', 0
+SECTION .data
+WELCOME_MSG db 'Welcome to Startaste! You are currently in the Formation!', 0
+navigation_msg db 'Nebula > Formation', 0
+COMMAND_MSG db '>', 0
+QUIT_MSG db 'EXIT SUCCESSFUL. YOU MAY NOW TURN OFF THE COMPTER.', 0
+DEBUG_STRING db 'DEBUG', 0
+NULL_MSG db 0
 
 %include "utils/graphics.asm"
 %include "utils/keyboard.asm"
+%include "utils/string.asm"
+%include "utils/interpreter.asm"
 
-times 1024-($-$$) db 0	; Padding for the rest of the kernel
+times 1536-($-$$)-6 db 0	; Padding for the rest of the kernel
+pop eax
+jmp kernel_main.update
+kernel_end:
