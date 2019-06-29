@@ -6,7 +6,9 @@
 #include "libs/ckernel.h"
 #include "libs/graphics.c"
 #include "libs/stars.c"
+#include "libs/planets.c"
 #include "libs/keyboard.c"
+#include "libs/terminal.c"
 
 // The list of registered stars, the number is the maximum number of stars that can be registered at once.
 Star *KERNEL_STARS[64];
@@ -26,8 +28,7 @@ void kernel_start() {
   // Initialize the stars.
   // These are Observables from ReactiveX programming.
   // We call Observalbes Stars and the Subscribed Observers are called Orbitting Planets.
-  star_start();
-  planet_start();
+  star_planet_start();
   while (1) {
     // Run through the updates of each star.
     // Note that the star must be registered with the kernel before it can be updated.
@@ -41,21 +42,22 @@ void kernel_start() {
 void graphics_start() {
   // First, print the navigation_message and clear the screen.
   char navigation_message[80] = "Nebula > Formation";
-  graphics_clear(0x38, 0x90);
+  graphics_clear(0xE0, 0xD8);
   graphics_update_navigation(navigation_message);
   // And then, put the command line character down, and move the cursor.
   graphics_put_char('>', 1, 0);
   graphics_move_cursor(1, 1);
 }
 
-void star_start() {
+void star_planet_start() {
   // One of the biggest stars is the keyboard input.
   Star *keyboard_star = new_star(0x0001, &keyboard_update);
+  keyboard_star->update = &keyboard_update;
   kernel_star_register(keyboard_star);
-}
-
-void planet_start() {
   // The keys we press have to go somewhere.
-  // So we create a simple terminal.
-  // TODO: create terminal to display keyboard input.
+  // So we create a simple terminal which orbits the keyboard star.
+  Planet *terminal_planet = new_planet(0x0001, &terminal_on_next, &terminal_on_error, &terminal_on_complete);
+  star_orbit(terminal_planet, keyboard_star);
+  // Must set the function pointer after it's created. WHY?
+  terminal_planet->on_next = &terminal_on_next;
 }

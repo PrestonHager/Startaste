@@ -2,6 +2,10 @@
 [BITS 16]
 [ORG 0x7C00]
 
+; the kernel size may need to be ajusted to fit the size of whatever comes after.
+%define KERNEL_SIZE 3
+%define KERNEL_OFFSET 0x200
+
 bootloader:
   ; first load the kernel into memory, then enter protected mode, and jump to the kernel.
 
@@ -65,8 +69,6 @@ protected_mode:
 
 ERROR_MSG db "Error in booting.", 0
 BOOT_DRIVE db 0
-KERNEL_OFFSET equ 0x200
-KERNEL_SIZE equ 0x3
 
 %include "utils/gdt.asm"
 %include "utils/print_string.asm"

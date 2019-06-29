@@ -4,11 +4,13 @@
 
 #include "keyboard.h"
 
-void keyboard_update(Star *self) {
-  // TODO: finish keyboard update function.
+void keyboard_update(Star *star) {
   // See if there's input from the keyboard.
   char status_byte = in(0x64);
-  if (!status_byte & 1) {
+  // Works to display 'L' and 'M'.
+  // status_byte = either 0b11100 or 0b11101.
+  graphics_put_char(status_byte+'0', 3, 0);
+  if (!(status_byte & 1)) {
     // if there isn't, then just return from the function.
     return;
   }
@@ -16,10 +18,12 @@ void keyboard_update(Star *self) {
   char key = in(0x60);
   // First, we must convert it to ASCII, to do this we use a predefined table.
   Element *element = keyboard_parse_key(key);
+  graphics_put_char(element->data[0], 3, 1);
+  return;
   // Now put that character and whether it's a make or break into the keyboard_star.
-  self->add_element(element, self);
-  for (int i=0; i < self->total_planets; i++) {
-    self->planets[i]->on_next(element);
+  for (int i=0; i < star->total_planets; i++) {
+    // Call the on_next function for each orbitting planet.
+    star->planets[i]->on_next(&element);
   }
 }
 

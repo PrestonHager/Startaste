@@ -33,20 +33,14 @@ typedef struct planet_t {
 /** Star (or Observable) Structure
  * Holds information about the Star and a few pointers to functions.
  * - short id A unique (to all stars) two byte numerical id.
- * - Element elements[128] An array of up to the last 128 elements emmited.
  * - Planet *planets[4] An array of pointers to up to 4 orbitting planets.
- * - char element_index The index of the last element emmited (often 127).
+ * - char total_planets The number of total active planets orbitting this star.
  * - void *update Pointer to update function of the observable.
- * - void *orbit Pointer to the orbit (subscribe) function to make a planet (Observer) orbit this star.
  */
 typedef struct star_t {
   short id;
-  Element *elements[128];
-  char element_index;
   // TODO: make planets dynamicaly allocate instead of having a limit.
   Planet *planets[4];
   char total_planets;
   void (*update)();
-  void (*orbit)();
-  void (*add_element)();
 } Star;
