@@ -45,7 +45,7 @@ void graphics_update_navigation(unsigned char msg[]) {
  - prints a string at a location (col, row). */
 void graphics_print(unsigned char msg[], unsigned char x, unsigned char y) {
   // calculate the starting location in video memory given the x and y.
-  unsigned char *video_memory = (unsigned char*) VIDEO_MEMORY_ADDRESS + (ROWS*COLUMNS*y + COLUMNS*x)*2;
+  unsigned char *video_memory = (unsigned char*) VIDEO_MEMORY_ADDRESS + (COLUMNS*y + x)*2;
   // loop over the string until we reach the null-terminator.
   for (unsigned int i = 0; msg[i] != 0; i++) {
     // set the character at video_memory[i*2 + "what we calculated"] to msg[i].
@@ -56,7 +56,7 @@ void graphics_print(unsigned char msg[], unsigned char x, unsigned char y) {
 /* graphics_put_char
  - puts a character at the location x, y on screen. */
 void graphics_put_char(unsigned char c, unsigned char x, unsigned char y) {
-  unsigned char *video_memory = (unsigned char*) VIDEO_MEMORY_ADDRESS + (ROWS*COLUMNS*y + COLUMNS*x)*2;
+  unsigned char *video_memory = (unsigned char*) VIDEO_MEMORY_ADDRESS + (COLUMNS*y + x)*2;
   *video_memory = c;
 }
 

@@ -45,7 +45,7 @@ void graphics_start() {
   graphics_clear(0xE0, 0xD8);
   graphics_update_navigation(navigation_message);
   // And then, put the command line character down, and move the cursor.
-  graphics_put_char('>', 1, 0);
+  graphics_put_char('>', 0, 1);
   graphics_move_cursor(1, 1);
 }
 
