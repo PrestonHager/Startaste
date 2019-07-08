@@ -3,7 +3,7 @@
 [ORG 0x7C00]
 
 ; the kernel size may need to be ajusted to fit the size of whatever comes after.
-%define KERNEL_SIZE 3
+%define KERNEL_SIZE 4
 %define KERNEL_OFFSET 0x200
 
 bootloader:

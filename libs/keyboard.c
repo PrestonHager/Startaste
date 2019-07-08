@@ -4,6 +4,38 @@
 
 #include "keyboard.h"
 
+// Where there is a backslash a special key is mapped to it. Use the `keyboard_special_map`.
+static const char keyboard_map[0x58] = {
+  ' ', ' ', '1', '2', '3', '4', '5', '6',
+  '7', '8', '9', '0', '-', '=', '\\', '\\',
+  'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
+  'O', 'P', '[', ']', '\\', '\\', 'A', 'S',
+  'D', 'F', 'G', 'H', 'J', 'K', 'L', ';',
+  '\'', '`', '\\', '\\', 'Z', 'X', 'V', 'B',
+  'N', 'M', ',', '.', '/', '\\', '\\', '\\',
+  ' ', '\\', '\\', '\\', '\\', '\\', '\\', '\\',
+  '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\',
+  '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\',
+  '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\'
+};
+
+// Special characters for the keyboard.
+// Could be written with other ASCII characters however,
+// it's easier to detect whether or not to print the character if we use the backslash.
+static const char keyboard_special_map[0x58] = {
+  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' ', ' ', ' ', 'B', 'T', // B = Backspace, T = Tab
+  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+  ' ', ' ', ' ', ' ', 'E', 'C', ' ', ' ', // E = Enter, ZXC = Left Shift-Alt-Ctrl
+  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+  ' ', ' ', 'Z', '\\', ' ', ' ', ' ', ' ', // = Backslash.
+  ' ', ' ', ' ', ' ', ' ', 'M', '*', 'X', // MNB = Right Shift-Alt-Ctrl, * = Numpad *
+  ' ', 'A', 'Q', 'W', 'E', 'R', 'T', 'Y', // A = Caps Lock, QWERTYUIOP[] = F1, F2, F3...
+  'U', 'I', 'O', 'P', 'K', 'S', '7', '8', // K = Num Lock, S = Scroll Lock, 0-9 = Numpad 0-9
+  '9', '-', '4', '5', '6', '+', '1', '2', // - = Numpad -, + = Numpad +
+  '3', '0', '.', 'F', ' ', ' ', '[', ']' // . = Numpad .
+};
+
 void keyboard_update(Star *star) {
   // See if there's input from the keyboard.
   char status_byte = in(0x64);
@@ -17,7 +49,7 @@ void keyboard_update(Star *star) {
   Element *element = keyboard_parse_key(key);
   // Debug statements....
   graphics_put_char(element->data[0], 0, 3);
-  // graphics_put_char(element->data[1], 1, 3);
+  graphics_put_char(element->data[1], 1, 3);
   // Doesn't work. Indexing the planets or calling the on_next function while passing in element.
   // Now put that character and whether it's a make or break into the keyboard_star.
   for (int i=0; i < star->total_planets; i++) {
@@ -64,38 +96,14 @@ bool keyboard_ack() {
 }
 
 char keyboard_lookup(char index) {
-  // Where there is a backslash a special key is mapped to it. Use the `keyboard_special_map`.
-  static const char keyboard_map[0x58] = {
-    ' ', ' ', '1', '2', '3', '4', '5', '6',
-    '7', '8', '9', '0', '-', '=', '\\', '\\',
-    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
-    'O', 'P', '[', ']', '\\', '\\', 'A', 'S',
-    'D', 'F', 'G', 'H', 'J', 'K', 'L', ';',
-    '\'', '`', '\\', '\\', 'Z', 'X', 'V', 'B',
-    'N', 'M', ',', '.', '/', '\\', '\\', '\\',
-    ' ', '\\', '\\', '\\', '\\', '\\', '\\', '\\',
-    '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\',
-    '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\',
-    '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\'
-  };
-  index = keyboard_map[index];
-  return index;
+  char v1 = keyboard_map[4];
+  char v2 = keyboard_map[index];
+  graphics_put_char(index+'0', 0, 4);
+  graphics_put_char(v1, 1, 4);
+  graphics_put_char(v2+'0', 2, 4);
+  return keyboard_map[index];
 }
 
 char keyboard_special_lookup(char index) {
-  static const char keyboard_special_map[0x58] = {
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', 'B', 'T', // B = Backspace, T = Tab
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', 'E', 'C', ' ', ' ', // E = Enter, ZXC = Left Shift-Alt-Ctrl
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', 'Z', '\\', ' ', ' ', ' ', ' ', // = Backslash.
-    ' ', ' ', ' ', ' ', ' ', 'M', '*', 'X', // MNB = Right Shift-Alt-Ctrl, * = Numpad *
-    ' ', 'A', 'Q', 'W', 'E', 'R', 'T', 'Y', // A = Caps Lock, QWERTYUIOP[] = F1, F2, F3...
-    'U', 'I', 'O', 'P', 'K', 'S', '7', '8', // K = Num Lock, S = Scroll Lock, 0-9 = Numpad 0-9
-    '9', '-', '4', '5', '6', '+', '1', '2', // - = Numpad -, + = Numpad +
-    '3', '0', '.', 'F', ' ', ' ', '[', ']' // . = Numpad .
-  };
-  index = keyboard_special_map[index];
-  return index;
+  return keyboard_special_map[index];
 }

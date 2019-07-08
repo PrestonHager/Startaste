@@ -54,14 +54,14 @@ os.img: $(files)
 
 %.bin: %.c $(kernel_entry).o $(libraries)
 	@ echo "Compiling $<."
-	@ $(C) -fno-pie -ffreestanding -m32 -c $< -o file.o
+	@ $(C) -std=c99 -fno-pie -ffreestanding -m32 -c $< -o file.o
 	@ echo "Linking and turing in to bytecode."
 	@ $(LINKER) -o file.tmp -Ttext 0x7E00 -m i386pe $(kernel_entry).o file.o
 	@ $(OBJCOPY) -O binary -j .text file.tmp $@
 
 %.o: %.c
 	@ echo "Compiling $<."
-	@ $(C) -fno-pie -ffreestanding -m32 -c $< -o $@
+	@ $(C) -std=c99 -fno-pie -ffreestanding -m32 -c $< -o $@
 
 %.o: %.asm
 	@ echo "Assembling $<."
