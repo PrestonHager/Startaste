@@ -15,7 +15,6 @@ bootloader=bootloader
 kernel=kernel
 kernel_entry=kernel_entry
 type=kernel
-libraries=libs/graphics.o
 qemu_args=
 
 ifeq ($(type), boot)
@@ -52,7 +51,7 @@ os.img: $(files)
 	@ echo "Assembling $<."
 	@ $(ASM) -f bin -o $@ $<
 
-%.bin: %.c $(kernel_entry).o $(libraries)
+%.bin: %.c $(kernel_entry).o
 	@ echo "Compiling $<."
 	@ $(C) -std=c99 -fno-pie -ffreestanding -m32 -c $< -o file.o
 	@ echo "Linking and turing in to bytecode."
