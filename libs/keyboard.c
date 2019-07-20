@@ -61,14 +61,15 @@ void keyboard_update(Star *star) {
 
 Element* keyboard_parse_key(char key) {
   Element *element;
-  // The keys 0x00 - 0x58 are make codes (key down).
-  if (key < 0x59) {
-    element->data[0] = 'M';
-  } else {
-    // Otherwise the key is 0x81 - 0xD3 and is a break code (key up).
+  // The keys 0x81 - 0xD3 are break codes (key up).
+  graphics_print_hex(key, 0, 5);
+  if (key > 0x80) { // NOTE: this doesn't work for some reason. key is always < 0x80 even when hex print shows it's not.
     element->data[0] = 'B';
     // We can then subtract 0x80 from this key to get it's equivilant make code to make translation easier.
-    key = key - 0x80;
+    key -= 0x80;
+  } else {
+    // Otherwise the key is 0x00 - 0x58 and is a make code (key down).
+    element->data[0] = 'M';
   }
   // Finally, we can translate this make code into the equivilant ascii (or representation) of the key.
   char c = keyboard_lookup(key);
@@ -85,7 +86,7 @@ Element* keyboard_parse_key(char key) {
 bool keyboard_ack() {
   bool return_bool;
   char times;
-  while (times < 255) {
+  while (times < 0xFF) {
     char ack = in(0x60);
     if (ack == 0xFA) {
       return_bool.v = 1;
@@ -96,11 +97,9 @@ bool keyboard_ack() {
 }
 
 char keyboard_lookup(char index) {
-  char v1 = keyboard_map[4];
   char v2 = keyboard_map[index];
-  graphics_put_char(index+'0', 0, 4);
-  graphics_put_char(v1, 1, 4);
-  graphics_put_char(v2+'0', 2, 4);
+  graphics_print_hex(index, 0, 4);
+  graphics_put_char(v2+'0', 2, 4); // NOTE: always returns 0
   return keyboard_map[index];
 }
 

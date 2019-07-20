@@ -60,6 +60,34 @@ void graphics_put_char(unsigned char c, unsigned char x, unsigned char y) {
   *video_memory = c;
 }
 
+/* graphics_print_hex
+ - prints a given hex number (byte) at the location x,  y on screen.
+   May take up more than 1 character space. */
+void graphics_print_hex(unsigned char num, unsigned char x, unsigned char y) {
+  unsigned char *video_memory = (unsigned char*) VIDEO_MEMORY_ADDRESS + (COLUMNS*y + x)*2;
+  if (num < 0x10) {
+    *video_memory = '0';
+    if (num > 0x09) {
+      video_memory[2] = num + 'A'-0x0a;
+    } else {
+      video_memory[2] = num + '0';
+    }
+  } else {
+    unsigned char num0 = num / 0x10;
+    unsigned char num1 = num % 0x10;
+    if (num0 > 0x09) {
+      video_memory[0] = num0 + 'A'-0x0a;
+    } else {
+      video_memory[0] = num0 + '0';
+    }
+    if (num1 > 0x09) {
+      video_memory[2] = num1 + 'A'-0x0a;
+    } else {
+      video_memory[2] = num1 + '0';
+    }
+  }
+}
+
 /* graphics_move_cursor
  - moves the cursor to a specified location (col, row). */
 void graphics_move_cursor(unsigned char x, unsigned char y) {
