@@ -5,7 +5,7 @@
 #include "keyboard.h"
 
 // Where there is a backslash a special key is mapped to it. Use the `keyboard_special_map`.
-static const char keyboard_map[0x58] = {
+static const unsigned char keyboard_map[0x58] = {
   ' ', ' ', '1', '2', '3', '4', '5', '6',
   '7', '8', '9', '0', '-', '=', '\\', '\\',
   'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
@@ -22,7 +22,7 @@ static const char keyboard_map[0x58] = {
 // Special characters for the keyboard.
 // Could be written with other ASCII characters however,
 // it's easier to detect whether or not to print the character if we use the backslash.
-static const char keyboard_special_map[0x58] = {
+static const unsigned char keyboard_special_map[0x58] = {
   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
   ' ', ' ', ' ', ' ', ' ', ' ', 'B', 'T', // B = Backspace, T = Tab
   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
@@ -38,13 +38,13 @@ static const char keyboard_special_map[0x58] = {
 
 void keyboard_update(Star *star) {
   // See if there's input from the keyboard.
-  char status_byte = in(0x64);
+  unsigned char status_byte = in(0x64);
   if (!(status_byte & 1)) {
     // if there isn't, then just return from the function.
     return;
   }
   // If there is, then get it.
-  char key = in(0x60);
+  unsigned char key = in(0x60);
   // First, we must convert it to ASCII, to do this we use a predefined table.
   Element *element = keyboard_parse_key(key);
   // Debug statements....
@@ -52,18 +52,17 @@ void keyboard_update(Star *star) {
   graphics_put_char(element->data[1], 1, 3);
   // Doesn't work. Indexing the planets or calling the on_next function while passing in element.
   // Now put that character and whether it's a make or break into the keyboard_star.
-  for (int i=0; i < star->total_planets; i++) {
+  for (unsigned char i=0; i < star->total_planets; i++) { // Right now i never reaches above 4. NOTE: if it does, data type might need to be change.
     // Call the on_next function for each orbitting planet.
     // graphics_put_char(i+'0', 2, 3);
     // star->planets[i]->on_next(&element);
   }
 }
 
-Element* keyboard_parse_key(char key) {
+Element* keyboard_parse_key(unsigned char key) {
   Element *element;
   // The keys 0x81 - 0xD3 are break codes (key up).
-  graphics_print_hex(key, 0, 5);
-  if (key > 0x80) { // NOTE: this doesn't work for some reason. key is always < 0x80 even when hex print shows it's not.
+  if (key > 0x80) {
     element->data[0] = 'B';
     // We can then subtract 0x80 from this key to get it's equivilant make code to make translation easier.
     key -= 0x80;
@@ -72,13 +71,14 @@ Element* keyboard_parse_key(char key) {
     element->data[0] = 'M';
   }
   // Finally, we can translate this make code into the equivilant ascii (or representation) of the key.
-  char c = keyboard_lookup(key);
+  unsigned char c = keyboard_lookup(key);
+  // We put the actual key (possibly a backslash designating a special key) into the data.
+  element->data[1] = c;
   // If the character is a backslash then we must also look at the special key map.
   if (c == '\\') {
     element->data[2] = keyboard_special_lookup(key);
   }
-  // Finally we put the actual key (possibly a backslash designating a special key) into the data with a null-terminator.
-  element->data[1] = c;
+  // Add a null-terminator to the end of the data and return.
   element->data[3] = 0;
   return element;
 }
@@ -96,13 +96,10 @@ bool keyboard_ack() {
   return return_bool;
 }
 
-char keyboard_lookup(char index) {
-  char v2 = keyboard_map[index];
-  graphics_print_hex(index, 0, 4);
-  graphics_put_char(v2+'0', 2, 4); // NOTE: always returns 0
+unsigned char keyboard_lookup(unsigned char index) {
   return keyboard_map[index];
 }
 
-char keyboard_special_lookup(char index) {
+unsigned char keyboard_special_lookup(unsigned char index) {
   return keyboard_special_map[index];
 }
