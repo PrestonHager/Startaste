@@ -49,7 +49,7 @@ void keyboard_update(Star *star) {
   Element *element = keyboard_parse_key(key);
   // Debug statements....
   graphics_put_char(element->data[0], 0, 3);
-  graphics_put_char(element->data[1], 1, 3);
+  graphics_put_char(element->data[2], 1, 3);
   // Doesn't work. Indexing the planets or calling the on_next function while passing in element.
   // Now put that character and whether it's a make or break into the keyboard_star.
   for (unsigned char i=0; i < star->total_planets; i++) { // Right now i never reaches above 4. NOTE: if it does, data type might need to be change.
@@ -70,24 +70,27 @@ Element* keyboard_parse_key(unsigned char key) {
     // Otherwise the key is 0x00 - 0x58 and is a make code (key down).
     element->data[0] = 'M';
   }
+  // Using the current value of the keyboard type (1, 2 or 3) put it in the data.
+  // TODO: create keyboard set detection and manipulation.
+  element->data[1] = 2; // Currently this value is always two.
   // Finally, we can translate this make code into the equivilant ascii (or representation) of the key.
   unsigned char c = keyboard_lookup(key);
   // We put the actual key (possibly a backslash designating a special key) into the data.
-  element->data[1] = c;
+  element->data[2] = c;
   // If the character is a backslash then we must also look at the special key map.
   if (c == '\\') {
-    element->data[2] = keyboard_special_lookup(key);
+    element->data[3] = keyboard_special_lookup(key);
   }
   // Add a null-terminator to the end of the data and return.
-  element->data[3] = 0;
+  element->data[4] = 0;
   return element;
 }
 
 bool keyboard_ack() {
   bool return_bool;
-  char times;
+  unsigned char times;
   while (times < 0xFF) {
-    char ack = in(0x60);
+    unsigned char ack = in(0x60);
     if (ack == 0xFA) {
       return_bool.v = 1;
       return return_bool;
@@ -97,6 +100,9 @@ bool keyboard_ack() {
 }
 
 unsigned char keyboard_lookup(unsigned char index) {
+  graphics_put_char(keyboard_map[index], 0, 5); // keyboard_map[index] returns 0x00
+  graphics_put_char(*(keyboard_map+index), 0, 4); // *(keyboard_map+index) returns 0x00
+  graphics_print_hex(index, 2, 4);
   return keyboard_map[index];
 }
 

@@ -6,14 +6,14 @@
  * Holds one bit that is either 1 or 0, true or false.
  */
 typedef struct bool_t {
-  char v:1;
+  unsigned char v:1;
 } bool;
 
 /** Element Data Structure.
  * Holds 16 bytes of data in a special format.
  */
 typedef struct element_t {
-  char data[16];
+  unsigned char data[16];
 } Element;
 
 /** Planet (or Observer) Structure
@@ -24,7 +24,7 @@ typedef struct element_t {
  * - void *on_complete Called when the parent star terminates or ends.
  */
 typedef struct planet_t {
-  short id;
+  unsigned short id;
   void (*on_next)();
   void (*on_error)();
   void (*on_complete)();
@@ -38,7 +38,7 @@ typedef struct planet_t {
  * - void *update Pointer to update function of the observable.
  */
 typedef struct star_t {
-  short id;
+  unsigned short id;
   // TODO: make planets dynamicaly allocate instead of having a limit.
   Planet *planets[4];
   char total_planets;
