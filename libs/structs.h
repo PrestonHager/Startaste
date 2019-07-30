@@ -41,6 +41,6 @@ typedef struct star_t {
   unsigned short id;
   // TODO: make planets dynamicaly allocate instead of having a limit.
   Planet *planets[4];
-  char total_planets;
+  unsigned char total_planets;
   void (*update)();
 } Star;
