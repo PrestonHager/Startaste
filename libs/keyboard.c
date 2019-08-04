@@ -49,7 +49,7 @@ void keyboard_update(Star *star) {
   Element *element = keyboard_parse_key(key);
   // Debug statements....
   graphics_put_char(element->data[0], 0, 3);
-  graphics_put_char(element->data[2], 1, 3);
+  graphics_put_char(element->data[2], 0, 2);
   // Doesn't work. Indexing the planets or calling the on_next function while passing in element.
   // Now put that character and whether it's a make or break into the keyboard_star.
   for (unsigned char i=0; i < star->total_planets; i++) { // Right now i never reaches above 4. NOTE: if it does, data type might need to be change.
@@ -100,9 +100,11 @@ bool keyboard_ack() {
 }
 
 unsigned char keyboard_lookup(unsigned char index) {
-  graphics_put_char(keyboard_map[index], 0, 5); // keyboard_map[index] returns 0x00
-  graphics_put_char(*(keyboard_map+index), 0, 4); // *(keyboard_map+index) returns 0x00
-  graphics_print_hex(index, 2, 4);
+  graphics_put_char(keyboard_map[0x02], 0, 4); // keyboard_map[0x02] returns '1'
+  graphics_print_hex(keyboard_map[index], 1, 4); // keyboard_map[index] returns 0x00
+  graphics_print_hex(*(keyboard_map+index), 3, 4); // *(keyboard_map+index) returns 0x00
+  graphics_put_char(':', 1, 3);
+  graphics_print_hex(index, 2, 3); // index prints hex correctly
   return keyboard_map[index];
 }
 
