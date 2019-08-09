@@ -41,7 +41,7 @@ void kernel_start() {
 
 void graphics_start() {
   // First, print the navigation_message and clear the screen.
-  char navigation_message[80] = "Nebula > Formation";
+  unsigned char navigation_message[80] = "Nebula > Formation";
   graphics_clear(0xE0, 0xD8);
   graphics_update_navigation(navigation_message);
   // And then, put the command line character down, and move the cursor.
