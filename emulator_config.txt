@@ -3,3 +3,6 @@
 [drive]
   format = "raw"
   file = "os.img"
+
+[machine]
+  type = "none"
