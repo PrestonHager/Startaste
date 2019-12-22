@@ -3,12 +3,15 @@
 
 #include "memory_map.h"
 
+/* start_kernel
+ - uses assembly to set the stack pointer and branch (jump) to the start of the kernel. */
 static void start_kernel(unsigned int pc, unsigned int sp) {
-    __asm("mov r13, r2\n\
-          bx r1\n");
+  __asm__ ("mov r13, r1\n\
+            bx r0\n" // base assembly.
+  );
 }
 
-int main(void) {
+void main() {
   unsigned int *kernel_code = (unsigned int *)__kernel_start__;
   unsigned int kernel_sp = kernel_code[0];
   unsigned int kernel_start = kernel_code[1];

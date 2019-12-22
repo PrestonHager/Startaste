@@ -20,7 +20,7 @@ else ifeq ($(type), c)
 	TOOL=arm-eabi
 	bootloader=bootloader/bootloader
 	kernel=kernel/ckernel
-	files = $(bootloader).bin $(kernel).bin
+	files = $(bootloader).bin $(bootloader)_magic.binary $(kernel).bin
 	SYSTEM=arm
 else
 	TOOL=
@@ -70,6 +70,10 @@ os.img: $(files)
 	@ echo "Assembling $<."
 	@ $(ASM) -f bin -o $@ $<
 
+$(bootloader).bin: $(bootloader).o
+	@ echo "Copying binary from $<."
+	@ $(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0x00 $< $@
+
 %.bin: %.o
 	@ echo "Copying binary from $<."
 	@ $(OBJCOPY) -O binary $< $@
@@ -84,4 +88,5 @@ os.img: $(files)
 
 clean:
 	@ echo "Cleaning up the temporary files."
-	@ rm -f */*.bin */*.o */*.tmp
+	@ rm -f *.bin *.o
+	@ rm -f */*.bin */*.o
