@@ -7,9 +7,9 @@ Welcome to Startaste's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    plan
+   kernel
 
 Indices and tables
 ==================
