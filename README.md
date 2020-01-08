@@ -1,5 +1,7 @@
 # Startaste
 
+[![Documentation Status](https://readthedocs.org/projects/startaste/badge/?version=latest)](https://startaste.readthedocs.io/en/latest/?badge=latest)
+
 Another operating system.
 Started as a ground-up operating system.
 Startaste now uses reactive programming methods in C.
