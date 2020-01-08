@@ -10,10 +10,3 @@ Welcome to Startaste's documentation!
 
    plan
    kernel
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
