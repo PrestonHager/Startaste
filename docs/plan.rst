@@ -26,6 +26,6 @@ The basic kernel of Startaste is very minimal and will only start a few drivers 
 To overcome this, we've built a few drivers to start out.
 However, it is possible that you may need to make more drivers for specific devices or take some from the community.
 
-.. _GitHub.: https://github.com/PrestonHager/Startaste
-.. _ReactiveX website: https://reactivex.io/intro.html
+.. _GitHub: https://github.com/PrestonHager/Startaste
+.. _ReactiveX website: http://reactivex.io/intro.html
 .. _Startaste's ReactiveX structure: https://startaste.rtfd.io/en/latest/kernel.html
