@@ -72,7 +72,8 @@ os.img: $(files)
 
 $(bootloader).bin: $(bootloader).o
 	@ echo "Copying binary from $<."
-	@ $(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0x00 $< $@
+	@ $(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0x00 $< $@.tmp
+	@ $(CAT) $@.tmp bootloader/bootloader_magic.binary > $@
 
 %.bin: %.o
 	@ echo "Copying binary from $<."

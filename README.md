@@ -35,11 +35,11 @@ If you're building the C kernel on windows you will need to use this as well bec
 
 ## Bugs and Development
 
-If you find a bug, or have a suggestion please report it in the [issues tab](https://github.com/PrestonHager/Startaste/issues) of the git repository.
+If you find a bug or have a suggestion please report it in the [issues tab of the git repository.](https://github.com/PrestonHager/Startaste/issues)
 Before creating a pull request, make sure that you follow code conventions as found in the current code.
-If you want to help us create the OS then create a new pull request in the [request tab](https://github.com/PrestonHager/Startaste/pull) of the repository.
+If you want to help us create the OS then create a new pull request in the [request tab of the repository.](https://github.com/PrestonHager/Startaste/pull)
 
-Take a look at the [documentation](http://startaste.rtfd.io/) page on readthedocs.
+Take a look at the [documentation](http://startaste.rtfd.io/) page on Read the Docs.
 Then feel free to develop for Startaste, create driver, applications, or branch a new OS from it.
 Make sure to read through all the README, License, and Documentation before doing such.
 
