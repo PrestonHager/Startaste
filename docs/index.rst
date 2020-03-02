@@ -10,3 +10,4 @@ Welcome to Startaste's documentation!
 
    plan
    kernel
+   bootloader
