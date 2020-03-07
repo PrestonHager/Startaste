@@ -72,7 +72,7 @@ os.img: $(files)
 
 $(bootloader).bin: $(bootloader).o
 	@ echo "Copying binary from $<."
-	@ $(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0x00 $< $@.tmp
+	@ $(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0xFF $< $@.tmp
 	@ $(CAT) $@.tmp bootloader/bootloader_magic.binary > $@
 
 %.bin: %.o
@@ -91,3 +91,4 @@ clean:
 	@ echo "Cleaning up the temporary files."
 	@ rm -f *.bin *.o
 	@ rm -f */*.bin */*.o
+	@ rm -f */*.tmp

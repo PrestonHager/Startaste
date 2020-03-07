@@ -6,8 +6,10 @@
 /* start_kernel
  - uses assembly to set the stack pointer and branch (jump) to the start of the kernel. */
 static void start_kernel(unsigned int pc, unsigned int sp) {
-  __asm__ ("mov r13, r1\n\
-            bx r0\n" // base assembly.
+  __asm__ ("mov r13, r1\n"
+            "bx r0\n"     // base assembly.
+            :             // no outputs
+            : "r" (sp), "r" (pc)
   );
 }
 

@@ -10,7 +10,7 @@
 // The list of registered stars, the number is the maximum number of stars that can be registered at once.
 Star *KERNEL_STARS[64];
 // A useful number to index the last free index of stars and to inquire about how full the registery is.
-char TOTAL_STARS;
+unsigned char TOTAL_STARS;
 
 void kernel_star_register(Star *star) {
   // Store the star in the next spot in the registery
@@ -37,7 +37,8 @@ void kernel_start() {
 }
 
 void graphics_start() {
-
+  unsigned char *video_mem = (unsigned char*) 0xb8000;
+  video_mem[0] = 'A';
 }
 
 void star_planet_start() {
