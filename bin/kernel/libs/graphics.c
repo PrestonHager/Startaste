@@ -5,7 +5,7 @@
 #include "graphics.h"
 #include "io.c"
 
-#define VIDEO_MEMORY_ADDRESS 0xb8000
+#define VIDEO_MEMORY_ADDRESS 0x1c090000
 #define COLUMNS 80
 #define ROWS 25
 

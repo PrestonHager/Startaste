@@ -14,12 +14,15 @@ static void start_kernel(unsigned int pc, unsigned int sp) {
 }
 
 void main() {
-  unsigned int *kernel_code = (unsigned int *)__kernel_start__;
-  unsigned int kernel_sp = kernel_code[0];
-  unsigned int kernel_start = kernel_code[1];
+  unsigned char *video_mem = (unsigned char*) 0xb8000;
+  video_mem[80] = 'B';
 
-  start_kernel(kernel_start, kernel_sp);
-
-  // shouldn't be reached
-  while (1);
+  // unsigned int *kernel_code = (unsigned int *)__kernel_start__;
+  // unsigned int kernel_sp = kernel_code[0];
+  // unsigned int kernel_start = kernel_code[1];
+  //
+  // start_kernel(kernel_start, kernel_sp);
+  //
+  // // shouldn't be reached
+  // while (1);
 }

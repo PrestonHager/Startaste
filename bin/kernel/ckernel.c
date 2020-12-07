@@ -7,6 +7,8 @@
 #include "libs/stars.c"
 #include "libs/planets.c"
 
+#define VIDEO_MEMEORY 0x1c090000
+
 // The list of registered stars, the number is the maximum number of stars that can be registered at once.
 Star *KERNEL_STARS[64];
 // A useful number to index the last free index of stars and to inquire about how full the registery is.
@@ -37,8 +39,8 @@ void kernel_start() {
 }
 
 void graphics_start() {
-  unsigned char *video_mem = (unsigned char*) 0xb8000;
-  video_mem[0] = 'A';
+  unsigned char *video_mem = (unsigned char*) VIDEO_MEMEORY;
+  video_mem[40] = 'A';
 }
 
 void star_planet_start() {

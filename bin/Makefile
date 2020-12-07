@@ -1,7 +1,7 @@
 # Default platform, change this to `win` for switching to some windows variables
 platform=linux
 # Default type of compilation, this affects the files we request later.
-type=kernel
+type=c
 
 # Defining tools and commands.
 # The Assembler (default=nasm):
@@ -21,6 +21,12 @@ else ifeq ($(type), c)
 	bootloader=bootloader/bootloader
 	kernel=kernel/ckernel
 	files = $(bootloader).bin $(bootloader)_magic.binary $(kernel).bin
+	SYSTEM=arm
+else ifeq ($(type), bare)
+	TOOL=arm-eabi
+	bootloader=startup
+	kerenl=bare_bones
+	files = $(kernel).bin
 	SYSTEM=arm
 else
 	TOOL=
@@ -56,9 +62,9 @@ endif
 # run - makes `os.img` and runs it.
 # clean - cleans all .o, .bin, .tmp files.
 
-all: run clean
+all: os.img clean
 
-run: os.img
+run: os.img clean
 	@ echo "Running the emulator using compiled image."
 	@ qemu-system-$(SYSTEM) -readconfig emulator_config.txt $(qemu_args)
 

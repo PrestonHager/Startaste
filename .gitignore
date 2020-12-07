@@ -5,6 +5,10 @@
 *.zip
 *.tmp
 *.img
+*.elf
 
 # debuging files that don't need to be added.
 os.img.*
+
+# stupid Apple files
+.DS_Store
