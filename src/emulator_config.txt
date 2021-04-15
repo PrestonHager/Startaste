@@ -1,0 +1,8 @@
+# qemu config file
+
+[drive]
+  format = "raw"
+  file = "os.img"
+
+[machine]
+  type = "none"

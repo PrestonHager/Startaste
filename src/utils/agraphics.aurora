@@ -1,0 +1,57 @@
+include>string;
+include>io;
+
+func graphics_put_char>row::Number, col::Number, char::String, color::Number;
+  Number: video_pointer = 0xb8000 + (row * 80 + col) * 2;
+  [video_pointer] = byte ascii>char;
+  video_pointer += 1;
+  [video_pointer] = byte color;
+end;
+
+func graphics_clear>color::Number, top_color::Number, message::String;
+  Number: video_pointer = 0xb8000;
+  for>Number: char = 0, char ?< len>message<, char ++; then;
+    [video_pointer] = byte ascii>message{char};
+    video_pointer += 1;
+    [video_pointer] = byte top_color;
+    video_pointer += 2;
+  end;
+  for>Number: i = 0, i ?< 80-len>message<, i ++; then;
+    [video_pointer] = byte ascii>" ";
+    video_pointer += 1;
+    [video_pointer] = byte top_color;
+    video_pointer += 2;
+  end;
+  for>Number: i = 0, i ?< 23*80, i ++; then;
+    [video_pointer] = byte ascii>" ";
+    video_pointer += 2;
+    [video_pointer] = byte color;
+    video_pointer += 2;
+  end;
+  graphics_move_cursor>0, 0;
+end;
+
+func graphics_print_string>message::String, row::Number, col::Number;
+  Number: video_pointer = 0xb8000 + (row * 80 + col) * 2;
+  for>Number: char = 0, char ?< len>message<, char ++; then;
+    [video_pointer] = byte ascii>message{char};
+    video_pointer += 2;
+  end;
+end;
+
+func graphics_move_cursor>row::Number, col::Number;
+  CURSOR_ROW = row;
+  CURSOR_COLUMN = col;
+  Number: location = row * 80 + col;
+  io_out>0x03D4, 0x0f;
+  // io_out>0x03D5, location{0:8};
+  io_out>0x03D4, 0x0e;
+  // io_out>0x03D5, loaction{9:16};
+end;
+
+func graphics_get_cursor>< => Number{2};
+  return {CURSOR_ROW, CURSOR_COLUMN};
+end;
+
+Number: CURSOR_ROW = 0;
+Number: CURSOR_COLUMN = 0;
