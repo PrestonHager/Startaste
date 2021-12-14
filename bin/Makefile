@@ -13,23 +13,27 @@ CAT=cat
 ifeq ($(type), boot)
 	# The default tool chain prefix used in the tools.
 	TOOL=
+	asm_format=bin
 	bootloader=bootloader_i386
 	files = $(bootloader).bin
 	SYSTEM=i386
 else ifeq ($(type), c)
 	TOOL=arm-eabi
+	asm_format=elf32
 	bootloader=bootloader/bootloader
 	kernel=kernel/ckernel
 	files = $(bootloader).bin $(bootloader)_magic.binary $(kernel).bin
 	SYSTEM=arm
 else ifeq ($(type), bare)
 	TOOL=arm-eabi
+	asm_format=elf32
 	bootloader=startup
 	kerenl=bare_bones
 	files = $(kernel).bin
 	SYSTEM=arm
 else
 	TOOL=
+	asm_format=bin
 	bootloader=bootloader_i386
 	kernel=kernel_i386
 	files = $(bootloader).bin $(kernel).bin
@@ -62,39 +66,46 @@ endif
 # run - makes `os.img` and runs it.
 # clean - cleans all .o, .bin, .tmp files.
 
+.SILENT: all run clean os.img
+
 all: os.img clean
 
 run: os.img clean
-	@ echo "Running the emulator using compiled image."
-	@ qemu-system-$(SYSTEM) -readconfig emulator_config.txt $(qemu_args)
+	echo "Running the emulator using compiled image."
+	qemu-system-$(SYSTEM) -readconfig emulator_config.txt $(qemu_args)
 
 os.img: $(files)
-	@ echo "Catanating files to make OS image."
-	@ $(CAT) $(files) > os.img
+	echo "Catanating files to make OS image."
+	$(CAT) $(files) > os.img
 
 %.bin: %.asm
-	@ echo "Assembling $<."
-	@ $(ASM) -f bin -o $@ $<
+	echo "Assembling $<."
+	$(ASM) -f $(asm_format) -o $@ $<
+	@ if [ "$(asm_format)" = "elf32" ]; then\
+		echo "Copying binary from $<.";\
+		$(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0xFF $< $@.tmp;\
+		$(CAT) $@.tmp bootloader/bootloader_magic.binary > $@;\
+	fi
 
-$(bootloader).bin: $(bootloader).o
-	@ echo "Copying binary from $<."
-	@ $(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0xFF $< $@.tmp
-	@ $(CAT) $@.tmp bootloader/bootloader_magic.binary > $@
+# $(bootloader).bin: $(bootloader).o
+# 	echo "Copying binary from $<."
+# 	$(OBJCOPY) -O binary --pad-to=0x1FE --gap-fill=0xFF $< $@.tmp
+# 	$(CAT) $@.tmp bootloader/bootloader_magic.binary > $@
 
 %.bin: %.o
-	@ echo "Copying binary from $<."
-	@ $(OBJCOPY) -O binary $< $@
+	echo "Copying binary from $<."
+	$(OBJCOPY) -O binary $< $@
 
 %.o: %.c
-	@ echo "Compiling $<."
-	@ $(C) -O0 -std=c99 -fno-pie -ffreestanding -c $< -o $@
+	echo "Compiling $<."
+	$(C) -O0 -std=c99 -fno-pie -ffreestanding -c $< -o $@
 
-%.o: %.asm
-	@ echo "Assembling $<."
-	@ $(ASM) -f elf32 -o $@ $<
+# %.o: %.asm
+# 	echo "Assembling $<."
+# 	$(ASM) -f elf32 -o $@ $<
 
 clean:
-	@ echo "Cleaning up the temporary files."
-	@ rm -f *.bin *.o
-	@ rm -f */*.bin */*.o
-	@ rm -f */*.tmp
+	echo "Cleaning up the temporary files."
+	rm -f *.bin *.o
+	rm -f */*.bin */*.o
+	rm -f */*.tmp

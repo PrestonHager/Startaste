@@ -1,0 +1,8 @@
+.global _start
+_start:
+  ldr sp, = STACK_TOP
+  bl start
+l:
+  b lb
+
+.size _start, . - _start
